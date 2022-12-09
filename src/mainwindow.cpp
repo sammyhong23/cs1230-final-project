@@ -233,6 +233,7 @@ void MainWindow::finish() {
 void MainWindow::connectUIElements() {
     connectBezier();
     connectFlow();
+    connectParallax();
     connectUploadFile();
     connectTexParam1();
     connectTexParam2();

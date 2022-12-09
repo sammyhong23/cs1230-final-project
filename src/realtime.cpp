@@ -122,6 +122,8 @@ void Realtime::paintGL() {
     if (settings.flow) {
         glUniform1f(glGetUniformLocation(shader, "time"), timer.elapsed());
     }
+    glUniform1i(glGetUniformLocation(shader, "parallax"), settings.parallax);
+    glUniform1f(glGetUniformLocation(shader, "stretch"), settings.texGenParam2);
 
 
 //    passCameraData();
