@@ -67,10 +67,10 @@ void Cube::makeFace(glm::vec3 topLeft,
                      bottomLeft + upStep * (float) (i + 1) + rightStep * (float) (j + 1),
                      bottomLeft + upStep * (float) i + rightStep * (float) j,
                      bottomLeft + upStep * (float) i + rightStep * (float) (j + 1),
-                     uStep * (float) i + vStep * (float) (i + 1),
-                     uStep * (float) (i + 1) + vStep * (float) (i + 1),
-                     uStep * (float) i + vStep * (float) i,
-                     uStep * (float) (i + 1) + vStep * (float) i);
+                     uStep * (float) j + vStep * (float) (i + 1),
+                     uStep * (float) (j + 1) + vStep * (float) (i + 1),
+                     uStep * (float) j + vStep * (float) i,
+                     uStep * (float) (j + 1) + vStep * (float) i);
         }
     }
 }

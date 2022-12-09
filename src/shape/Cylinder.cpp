@@ -67,15 +67,15 @@ void Cylinder::makeWedge(float curTheta, float nextTheta) {
         glm::vec3 topLeft2 = glm::vec3(r * sin(curTheta), -.5f, r * cos(curTheta));
         glm::vec3 topRight2 = glm::vec3(r * sin(nextTheta), -.5f, r * cos(nextTheta));
 
-        glm::vec2 topLeftUV1 = glm::vec2(topLeft1[0], topLeft1[2]);
-        glm::vec2 topRightUV1 = glm::vec2(topRight1[0], topRight1[2]);
-        glm::vec2 bottomLeftUV1 = glm::vec2(bottomLeft1[0], bottomLeft1[2]);
-        glm::vec2 bottomRightUV1 = glm::vec2(bottomRight1[0], bottomRight1[2]);
+        glm::vec2 topLeftUV1 = glm::vec2(topLeft1[0], -topLeft1[2]) + .5f;
+        glm::vec2 topRightUV1 = glm::vec2(topRight1[0], -topRight1[2]) + .5f;
+        glm::vec2 bottomLeftUV1 = glm::vec2(bottomLeft1[0], -bottomLeft1[2]) + .5f;
+        glm::vec2 bottomRightUV1 = glm::vec2(bottomRight1[0], -bottomRight1[2]) + .5f;
 
-        glm::vec2 topLeftUV2 = glm::vec2(topLeft2[0], topLeft2[2]);
-        glm::vec2 topRightUV2 = glm::vec2(topRight2[0], topRight2[2]);
-        glm::vec2 bottomLeftUV2 = glm::vec2(bottomLeft2[0], bottomLeft2[2]);
-        glm::vec2 bottomRightUV2 = glm::vec2(bottomRight2[0], bottomRight2[2]);
+        glm::vec2 topLeftUV2 = glm::vec2(topLeft2[0], -topLeft2[2]) + .5f;
+        glm::vec2 topRightUV2 = glm::vec2(topRight2[0], -topRight2[2]) + .5f;
+        glm::vec2 bottomLeftUV2 = glm::vec2(bottomLeft2[0], -bottomLeft2[2]) + .5f;
+        glm::vec2 bottomRightUV2 = glm::vec2(bottomRight2[0], -bottomRight2[2]) + .5f;
 
         makeTile(topLeft1,
                  topRight1,

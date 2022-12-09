@@ -68,10 +68,10 @@ void Cone::makeWedge(float curTheta, float nextTheta) {
         glm::vec3 topLeft = glm::vec3(r * sin(curTheta), -.5f, r * cos(curTheta));
         glm::vec3 topRight = glm::vec3(r * sin(nextTheta), -.5f, r * cos(nextTheta));
 
-        glm::vec2 topLeftUV = glm::vec2(topLeft[0], topLeft[2]);
-        glm::vec2 topRightUV = glm::vec2(topRight[0], topRight[2]);
-        glm::vec2 bottomLeftUV = glm::vec2(bottomLeft[0], bottomLeft[2]);
-        glm::vec2 bottomRightUV = glm::vec2(bottomLeft[0], bottomRight[2]);
+        glm::vec2 topLeftUV = glm::vec2(topLeft[0], -topLeft[2]) + .5f;
+        glm::vec2 topRightUV = glm::vec2(topRight[0], -topRight[2]) + .5f;
+        glm::vec2 bottomLeftUV = glm::vec2(bottomLeft[0], -bottomLeft[2]) + .5f;
+        glm::vec2 bottomRightUV = glm::vec2(bottomRight[0], -bottomRight[2]) + .5f;
 
         makeTile(topLeft,
                  topRight,

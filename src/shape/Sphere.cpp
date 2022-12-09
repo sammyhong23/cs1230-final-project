@@ -72,10 +72,10 @@ void Sphere::makeWedge(float currentTheta, float nextTheta) {
         glm::vec3 bottomLeft = m_radius * glm::vec3(sin(phi) * sin(currentTheta), cos(phi), sin(phi) * cos(currentTheta));
         glm::vec3 bottomRight = m_radius * glm::vec3(sin(phi) * sin(nextTheta), cos(phi), sin(phi) * cos(nextTheta));
 
-        glm::vec2 topLeftUV = glm::vec2(uStart, vStep * (float) (i + 1));
-        glm::vec2 topRightUV = glm::vec2(uStart + uStep, vStep * (float) (i + 1));
-        glm::vec2 bottomLeftUV = glm::vec2(uStart, vStep * (float) i);
-        glm::vec2 bottomRightUV = glm::vec2(uStart + uStep, vStep * (float) i);
+        glm::vec2 topLeftUV = glm::vec2(uStart, 1.f - vStep * (float) (i + 1));
+        glm::vec2 topRightUV = glm::vec2(uStart + uStep, 1.f - vStep * (float) (i + 1));
+        glm::vec2 bottomLeftUV = glm::vec2(uStart, 1.f - vStep * (float) i);
+        glm::vec2 bottomRightUV = glm::vec2(uStart + uStep, 1.f - vStep * (float) i);
 
         makeTile(topLeft, topRight, bottomLeft, bottomRight, topLeftUV, topRightUV, bottomLeftUV, bottomRightUV);
     }

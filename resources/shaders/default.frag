@@ -12,6 +12,7 @@ struct Light {
 
 in vec3 wspos;
 in vec3 wsnorm;
+in vec2 uv;
 
 out vec4 fragColor;
 
