@@ -6,6 +6,7 @@ class ParallaxMap
 {
 public:
     ParallaxMap();
+    void bumpToNormal();
 };
 
 #endif // PARALLAX_H
