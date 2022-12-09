@@ -1,6 +1,9 @@
 #include "flowmap.h"
 
-FlowMap::FlowMap()
-{
+void FlowMap::passFlowMapData() {
+
+}
+
+void FlowMap::passMainTextureData() {
 
 }

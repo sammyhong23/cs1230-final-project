@@ -87,6 +87,11 @@ qt6_add_resources(${PROJECT_NAME} "Resources"
     FILES
         resources/shaders/default.frag
         resources/shaders/default.vert
+        resources/shaders/flow.frag
+        resources/shaders/flow.vert
+        resources/images/kitten.png
+        resources/images/water.png
+        resources/images/flow.png
 )
 
 # GLEW: this provides support for Windows (including 64-bit)

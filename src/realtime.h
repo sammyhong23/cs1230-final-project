@@ -48,6 +48,8 @@ private:
     int m_timer;                                        // Stores timer which attempts to run ~60 times per second
     QElapsedTimer m_elapsedTimer;                       // Stores timer which keeps track of actual time between frames
 
+    QElapsedTimer programTimer;
+
     // Input Related Variables
     bool m_mouseDown = false;                           // Stores state of left mouse button
     glm::vec2 m_prev_mouse_pos;                         // Stores mouse position
@@ -65,6 +67,14 @@ private:
     GLuint shader;
     GLuint vbos[4];
     GLuint vaos[4];
+
+    GLuint flow_shader;
+    QImage image;
+    GLuint image_texture;
+    QImage flow_image;
+    GLuint flow_texture;
+    GLuint fullscreen_vbo;
+    GLuint fullscreen_vao;
 
     Cube* cube;
     Cone* cone;
@@ -94,4 +104,6 @@ private:
     void move(float deltat, float units);
     void rotateview(float deltaX, float deltaY, float sensitivity);
     glm::mat3 rotation_mat3(glm::vec3 axis, float angle);
+
+    float t = 0;
 };

@@ -9,8 +9,6 @@
 #include <glm/gtx/string_cast.hpp>
 
 
-// ================== Project 5: Lights, Camera
-
 Realtime::Realtime(QWidget *parent)
     : QOpenGLWidget(parent)
 {
@@ -42,6 +40,7 @@ void Realtime::finish() {
     glDeleteVertexArrays(4, vaos);
 
     glDeleteProgram(shader);
+    glDeleteProgram(flow_shader);
 
     delete cube;
     delete cone;
@@ -56,6 +55,7 @@ void Realtime::initializeGL() {
 
     m_timer = startTimer(1000/60);
     m_elapsedTimer.start();
+    programTimer.start();
 
     // Initializing GL.
     // GLEW (GL Extension Wrangler) provides access to OpenGL functions.
@@ -77,6 +77,7 @@ void Realtime::initializeGL() {
     isGLEWInit = true;
     glClearColor(0.f, 0.f, 0.f, 1.f);
     shader = ShaderLoader::createShaderProgram(":/resources/shaders/default.vert", ":/resources/shaders/default.frag");
+    flow_shader = ShaderLoader::createShaderProgram(":/resources/shaders/flow.vert", ":/resources/shaders/flow.frag");
     updateShapeParams();
 
     memset(vbos, 0, 4 * sizeof(GLuint));
@@ -86,6 +87,63 @@ void Realtime::initializeGL() {
     glGenVertexArrays(4, vaos);
 
     initializeVBOSVAOS();
+
+    image = QImage(QString(":/resources/images/water.png"));
+    image = image.convertToFormat(QImage::Format_RGBA8888).mirrored();
+
+    flow_image = QImage(QString(":/resources/images/flow3.png"));
+    flow_image = flow_image.convertToFormat(QImage::Format_RGBA8888).mirrored();
+
+    glGenTextures(1, &image_texture);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, image_texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width(), image.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, image.bits());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    glGenTextures(1, &flow_texture);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, flow_texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, flow_image.width(), flow_image.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, flow_image.bits());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    glUniform1i(glGetUniformLocation(flow_shader, "mainTexture"), GL_TEXTURE0);
+    glUniform1i(glGetUniformLocation(flow_shader, "flowMap"), GL_TEXTURE1);
+    glUniform1f(glGetUniformLocation(flow_shader, "time"), programTimer.elapsed());
+    programTimer.restart();
+
+    std::vector<GLfloat> fullscreen_quad_data =
+    { //     POSITIONS    //
+        -1.f,  1.f, 0.0f,
+         0.f,  1.f,
+        -1.f, -1.f, 0.0f,
+         0.f,  0.f,
+         1.f, -1.f, 0.0f,
+         1.f,  0.f,
+         1.f,  1.f, 0.0f,
+         1.f,  1.f,
+        -1.f,  1.f, 0.0f,
+         0.f,  1.f,
+         1.f, -1.f, 0.0f,
+         1.f,  0.f
+    };
+    glGenBuffers(1, &fullscreen_vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, fullscreen_vbo);
+    glBufferData(GL_ARRAY_BUFFER, fullscreen_quad_data.size()*sizeof(GLfloat), fullscreen_quad_data.data(), GL_STATIC_DRAW);
+    glGenVertexArrays(1, &fullscreen_vao);
+    glBindVertexArray(fullscreen_vao);
+
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), reinterpret_cast<void*>(3 * sizeof(GLfloat)));
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+
 }
 
 void Realtime::paintGL() {
@@ -106,6 +164,23 @@ void Realtime::paintGL() {
         glDrawArrays(GL_TRIANGLES, 0, shapeData[type].size() / 6);
         glBindVertexArray(0);
     }
+    glUseProgram(0);
+
+    // kitten
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glUseProgram(flow_shader);
+
+    t += (float) programTimer.elapsed() / 500.f;
+
+    glBindVertexArray(fullscreen_vao);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, image_texture);
+    glUniform1f(glGetUniformLocation(flow_shader, "time"), t);
+    programTimer.restart();
+
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glBindVertexArray(0);
     glUseProgram(0);
 }
 
