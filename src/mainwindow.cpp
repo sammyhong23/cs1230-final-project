@@ -51,8 +51,6 @@ void MainWindow::initialize() {
     QLabel *texparam2_label = new QLabel(); // Parameter 2 label
     texparam2_label->setText("Parameter 2:");
 
-
-
     // Create checkbox for per-pixel filter
     bezier = new QCheckBox();
     bezier->setText(QStringLiteral("Follow Bezier Curve"));
@@ -82,12 +80,12 @@ void MainWindow::initialize() {
     p1Slider = new QSlider(Qt::Orientation::Horizontal); // Parameter 1 slider
     p1Slider->setTickInterval(1);
     p1Slider->setMinimum(1);
-    p1Slider->setMaximum(25);
+    p1Slider->setMaximum(200);
     p1Slider->setValue(1);
 
     p1Box = new QSpinBox();
     p1Box->setMinimum(1);
-    p1Box->setMaximum(25);
+    p1Box->setMaximum(200);
     p1Box->setSingleStep(1);
     p1Box->setValue(1);
 
@@ -232,6 +230,8 @@ void MainWindow::finish() {
 
 void MainWindow::connectUIElements() {
     connectBezier();
+    connectParallax();
+    connectFlow();
     connectUploadFile();
     connectParam1();
     connectParam2();
@@ -248,7 +248,7 @@ void MainWindow::connectParallax() {
 }
 
 void MainWindow::connectFlow() {
-    connect(parallax, &QCheckBox::clicked, this, &MainWindow::onFlow);
+    connect(flow, &QCheckBox::clicked, this, &MainWindow::onFlow);
 }
 
 void MainWindow::connectUploadFile() {

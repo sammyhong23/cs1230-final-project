@@ -133,24 +133,30 @@ void Cylinder::makeTile(glm::vec3 topLeft,
     Shape::insertVec3(m_vertexData, p1t1);
     Shape::insertVec3(m_vertexData, n1t1);
     Shape::insertVec2(m_vertexData, topLeftUV);
+    Shape::insertVec3(m_vertexData, glm::normalize(bottomRight - bottomLeft));
 
     Shape::insertVec3(m_vertexData, p2t1);
     Shape::insertVec3(m_vertexData, n2t1);
     Shape::insertVec2(m_vertexData, bottomLeftUV);
+    Shape::insertVec3(m_vertexData, glm::normalize(bottomRight - bottomLeft));
 
     Shape::insertVec3(m_vertexData, p3t1);
     Shape::insertVec3(m_vertexData, n3t1);
     Shape::insertVec2(m_vertexData, bottomRightUV);
+    Shape::insertVec3(m_vertexData, glm::normalize(bottomRight - bottomLeft));
 
     Shape::insertVec3(m_vertexData, p1t2);
     Shape::insertVec3(m_vertexData, n1t2);
     Shape::insertVec2(m_vertexData, topLeftUV);
+    Shape::insertVec3(m_vertexData, glm::normalize(bottomRight - bottomLeft));
 
     Shape::insertVec3(m_vertexData, p2t2);
     Shape::insertVec3(m_vertexData, n2t2);
     Shape::insertVec2(m_vertexData, bottomRightUV);
+    Shape::insertVec3(m_vertexData, glm::normalize(bottomRight - bottomLeft));
 
     Shape::insertVec3(m_vertexData, p3t2);
     Shape::insertVec3(m_vertexData, n3t2);
     Shape::insertVec2(m_vertexData, topRightUV);
+    Shape::insertVec3(m_vertexData, glm::normalize(bottomRight - bottomLeft));
 }

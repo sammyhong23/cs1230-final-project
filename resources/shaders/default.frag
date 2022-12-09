@@ -32,6 +32,9 @@ float falloff(float angle, float inner, float penumbra);
 void setAtt(Light light, out float fatt);
 void setDir(Light light, out vec3 lightdir);
 
+uniform bool texturemapon;
+uniform sampler2D texturemap;
+
 void main() {
     fragColor = ka * oa;
     float ndotl;
@@ -49,7 +52,7 @@ void main() {
         ndotl = dot(-lightdir, normalize(wsnorm));
 
         if (ndotl > 0) {
-            diffuse = kd * od;
+            diffuse = (texturemapon) ? texture(texturemap, uv) : kd * od;
             vec3 ri = reflect(lightdir, normalize(wsnorm));
             float rdotv = dot(ri, normalize(camerapos - wspos));
             power = (n > 0) ? pow(rdotv, n) : 1;

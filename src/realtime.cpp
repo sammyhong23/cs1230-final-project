@@ -86,10 +86,47 @@ void Realtime::initializeGL() {
     glGenVertexArrays(4, vaos);
 
     initializeVBOSVAOS();
+
+    QImage img = QImage(QString("/Users/justinrhee/Desktop/water.jpeg"))
+            .convertToFormat(QImage::Format_RGBA8888).mirrored();
+    glGenTextures(1, &texturemap);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texturemap);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img.width(), img.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, img.bits());
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    img = QImage(QString("/Users/justinrhee/Desktop/watertex.jpeg"))
+            .convertToFormat(QImage::Format_RGBA8888).mirrored();
+    glGenTextures(1, &heightmap);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, heightmap);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img.width(), img.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, img.bits());
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    glUseProgram(shader);
+    glUniform1f(glGetUniformLocation(shader, "texturemapon"), true);
+    glUniform1f(glGetUniformLocation(shader, "heightmapon"), false);
+    glUniform1i(glGetUniformLocation(shader, "heightmap"), 1);
+    glUniform1i(glGetUniformLocation(shader, "texturemap"), 0);
+    glUseProgram(0);
 }
 
 void Realtime::paintGL() {
     glUseProgram(shader);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texturemap);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, heightmap);
+
     passCameraData();
     passGlobalData();
 
@@ -103,9 +140,11 @@ void Realtime::paintGL() {
             passLightData(light, lightNum);
             ++lightNum;
         }
-        glDrawArrays(GL_TRIANGLES, 0, shapeData[type].size() / 8);
+        glDrawArrays(GL_TRIANGLES, 0, shapeData[type].size() / 11);
         glBindVertexArray(0);
     }
+
+    glBindTexture(GL_TEXTURE_2D, 0);
     glUseProgram(0);
 }
 
@@ -141,6 +180,9 @@ void Realtime::settingsChanged() {
     if (isGLEWInit) {
         this->makeCurrent();
         updateAllVBOs();
+        glUseProgram(shader);
+        glUniform1f(glGetUniformLocation(shader, "heightmapon"), settings.parallax);
+        glUseProgram(0);
     }
 
     update(); // asks for a PaintGL() call to occur
@@ -202,11 +244,13 @@ void Realtime::initializeVBOSVAOS() {
 
         glBindVertexArray(vaos[i]);
         glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 32, reinterpret_cast<void*>(0 * sizeof(GLfloat)));
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 44, reinterpret_cast<void*>(0 * sizeof(GLfloat)));
         glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 32, reinterpret_cast<void*>(3 * sizeof(GLfloat)));
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 44, reinterpret_cast<void*>(3 * sizeof(GLfloat)));
         glEnableVertexAttribArray(2);
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 32, reinterpret_cast<void*>(6 * sizeof(GLfloat)));
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 44, reinterpret_cast<void*>(6 * sizeof(GLfloat)));
+        glEnableVertexAttribArray(3);
+        glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 44, reinterpret_cast<void*>(8 * sizeof(GLfloat)));
 
         glBindVertexArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
