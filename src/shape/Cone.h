@@ -22,6 +22,10 @@ private:
                   glm::vec3 topRight,
                   glm::vec3 bottomLeft,
                   glm::vec3 bottomRight,
+                  glm::vec2 topLeftUV,
+                  glm::vec2 topRightUV,
+                  glm::vec2 bottomLeftUV,
+                  glm::vec2 bottomRightUV,
                   bool isCap);
     void makeWedge(float curTheta, float nextTheta);
     void makeCone();

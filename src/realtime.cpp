@@ -103,7 +103,7 @@ void Realtime::paintGL() {
             passLightData(light, lightNum);
             ++lightNum;
         }
-        glDrawArrays(GL_TRIANGLES, 0, shapeData[type].size() / 6);
+        glDrawArrays(GL_TRIANGLES, 0, shapeData[type].size() / 8);
         glBindVertexArray(0);
     }
     glUseProgram(0);

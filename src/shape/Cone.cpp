@@ -28,6 +28,11 @@ void Cone::makeWedge(float curTheta, float nextTheta) {
     // make conical part
     float y = -.5f;
     float yStep = 1.f / m_param1;
+
+    float uStart = curTheta / (2 * M_PI);
+    float uStep = fabs(nextTheta - curTheta) / (2 * M_PI);
+    float vStep = yStep;
+
     for (int i = 0; i < m_param1; ++i) {
         float scale = 1.f - ((y + .5) / 1.f);
         glm::vec3 bottomLeft = glm::vec3(scale * m_radius * sin(curTheta), y, scale * m_radius * cos(curTheta));
@@ -36,7 +41,21 @@ void Cone::makeWedge(float curTheta, float nextTheta) {
         scale = 1.f - ((y + .5) / 1.f);
         glm::vec3 topLeft = glm::vec3(scale * m_radius * sin(curTheta), y, scale * m_radius * cos(curTheta));
         glm::vec3 topRight = glm::vec3(scale * m_radius * sin(nextTheta), y, scale * m_radius * cos(nextTheta));
-        makeTile(topLeft, topRight, bottomLeft, bottomRight, false);
+
+        glm::vec2 topLeftUV = glm::vec2(uStart, vStep * (float) (i + 1));
+        glm::vec2 topRightUV = glm::vec2(uStart + uStep, vStep * (float) (i + 1));
+        glm::vec2 bottomLeftUV = glm::vec2(uStart, vStep * (float) i);
+        glm::vec2 bottomRightUV = glm::vec2(uStart + uStep, vStep * (float) i);
+
+        makeTile(topLeft,
+                 topRight,
+                 bottomLeft,
+                 bottomRight,
+                 topLeftUV,
+                 topRightUV,
+                 bottomLeftUV,
+                 bottomRightUV,
+                 false);
     }
 
     // make cap
@@ -49,7 +68,20 @@ void Cone::makeWedge(float curTheta, float nextTheta) {
         glm::vec3 topLeft = glm::vec3(r * sin(curTheta), -.5f, r * cos(curTheta));
         glm::vec3 topRight = glm::vec3(r * sin(nextTheta), -.5f, r * cos(nextTheta));
 
-        makeTile(topLeft, topRight, bottomLeft, bottomRight, true);
+        glm::vec2 topLeftUV = glm::vec2(topLeft[0], topLeft[2]);
+        glm::vec2 topRightUV = glm::vec2(topRight[0], topRight[2]);
+        glm::vec2 bottomLeftUV = glm::vec2(bottomLeft[0], bottomLeft[2]);
+        glm::vec2 bottomRightUV = glm::vec2(bottomLeft[0], bottomRight[2]);
+
+        makeTile(topLeft,
+                 topRight,
+                 bottomLeft,
+                 bottomRight,
+                 topLeftUV,
+                 topRightUV,
+                 bottomLeftUV,
+                 bottomRightUV,
+                 true);
     }
 }
 
@@ -57,6 +89,10 @@ void Cone::makeTile(glm::vec3 topLeft,
                     glm::vec3 topRight,
                     glm::vec3 bottomLeft,
                     glm::vec3 bottomRight,
+                    glm::vec2 topLeftUV,
+                    glm::vec2 topRightUV,
+                    glm::vec2 bottomLeftUV,
+                    glm::vec2 bottomRightUV,
                     bool isCap) {
 
     glm::vec3 p1t1 = topLeft;
@@ -91,14 +127,25 @@ void Cone::makeTile(glm::vec3 topLeft,
 
     Shape::insertVec3(m_vertexData, p1t1);
     Shape::insertVec3(m_vertexData, n1t1);
+    Shape::insertVec2(m_vertexData, topLeftUV);
+
     Shape::insertVec3(m_vertexData, p2t1);
     Shape::insertVec3(m_vertexData, n2t1);
+    Shape::insertVec2(m_vertexData, bottomLeftUV);
+
     Shape::insertVec3(m_vertexData, p3t1);
     Shape::insertVec3(m_vertexData, n3t1);
+    Shape::insertVec2(m_vertexData, bottomRightUV);
+
     Shape::insertVec3(m_vertexData, p1t2);
     Shape::insertVec3(m_vertexData, n1t2);
+    Shape::insertVec2(m_vertexData, topLeftUV);
+
     Shape::insertVec3(m_vertexData, p2t2);
     Shape::insertVec3(m_vertexData, n2t2);
+    Shape::insertVec2(m_vertexData, bottomRightUV);
+
     Shape::insertVec3(m_vertexData, p3t2);
     Shape::insertVec3(m_vertexData, n3t2);
+    Shape::insertVec2(m_vertexData, topRightUV);
 }
