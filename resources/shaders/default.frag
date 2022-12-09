@@ -32,6 +32,7 @@ out vec4 fragColor;
 // TEXTURE GEN
 uniform vec2 resolution;
 uniform float frequency;
+uniform float time;
 
 //float falloff(float angle, float inner, float penumbra);
 //void setAtt(Light light, out float fatt);
@@ -42,6 +43,37 @@ vec2 random2( vec2 p ) {
 }
 
 void main() {
+    // TEXTURE GEN
+    vec2 st = gl_FragCoord.xy/resolution.xy;
+    st.x *= resolution.x/resolution.y;
+    vec3 color = vec3(0.199,0.417,0.990);
+
+    // Scale
+    st *= frequency;
+
+    // Tile the space
+    vec2 i_st = floor(st);
+    vec2 f_st = fract(st);
+
+    float m_dist = 10.;  // minimum distance
+
+    for (int j=-1; j<=1; j++ ) {
+        for (int i=-1; i<=1; i++ ) {
+            vec2 neighbor = vec2(float(i),float(j));
+            vec2 point = random2(i_st + neighbor);
+            point = 0.5 + 0.5*sin(0.4*0.001*time + 5*point);
+            vec2 diff = neighbor + point - f_st;
+            float dist = length(diff);
+
+            m_dist = min(m_dist, dist);
+        }
+    }
+
+    // Assign a color using the closest point position
+    color += 0.3 * m_dist * m_dist;
+
+    fragColor = vec4(color, 1.f);
+
 //    fragColor = ka * oa;
 //    float ndotl;
 //    for (int i = 0; i < 8; ++i) {
@@ -68,40 +100,6 @@ void main() {
 //    }
 
 //    fragColor = clamp(fragColor, 0.f, 1.f);
-
-    // TEXTURE GEN
-    vec2 st = gl_FragCoord.xy/resolution.xy;
-    st.x *= resolution.x/resolution.y;
-    vec3 color = vec3(0.199,0.417,0.990);
-
-    // Scale
-    st *= frequency;
-
-    // Tile the space
-    vec2 i_st = floor(st);
-    vec2 f_st = fract(st);
-
-    float m_dist = 10.;  // minimum distance
-    vec2 m_point;        // minimum point
-
-    for (int j=-1; j<=1; j++ ) {
-        for (int i=-1; i<=1; i++ ) {
-            vec2 neighbor = vec2(float(i),float(j));
-            vec2 point = random2(i_st + neighbor);
-            vec2 diff = neighbor + point - f_st;
-            float dist = length(diff);
-
-            if( dist < m_dist ) {
-                m_dist = dist;
-                m_point = point;
-            }
-        }
-    }
-
-    // Assign a color using the closest point position
-    color += 0.3 * m_dist * m_dist;
-
-    fragColor = vec4(color, 1.f);
 }
 
 //float falloff(float angle, float inner, float penumbra) {

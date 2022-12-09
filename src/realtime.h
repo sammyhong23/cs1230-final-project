@@ -47,6 +47,7 @@ private:
     // Tick Related Variables
     int m_timer;                                        // Stores timer which attempts to run ~60 times per second
     QElapsedTimer m_elapsedTimer;                       // Stores timer which keeps track of actual time between frames
+    QElapsedTimer timer;
 
     // Input Related Variables
     bool m_mouseDown = false;                           // Stores state of left mouse button

@@ -232,6 +232,7 @@ void MainWindow::finish() {
 
 void MainWindow::connectUIElements() {
     connectBezier();
+    connectFlow();
     connectUploadFile();
     connectTexParam1();
     connectTexParam2();
@@ -250,7 +251,7 @@ void MainWindow::connectParallax() {
 }
 
 void MainWindow::connectFlow() {
-    connect(parallax, &QCheckBox::clicked, this, &MainWindow::onFlow);
+    connect(flow, &QCheckBox::clicked, this, &MainWindow::onFlow);
 }
 
 void MainWindow::connectUploadFile() {

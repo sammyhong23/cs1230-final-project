@@ -57,6 +57,8 @@ void Realtime::initializeGL() {
     m_timer = startTimer(1000/60);
     m_elapsedTimer.start();
 
+    timer.start();
+
     // Initializing GL.
     // GLEW (GL Extension Wrangler) provides access to OpenGL functions.
     glewExperimental = GL_TRUE;
@@ -117,6 +119,10 @@ void Realtime::paintGL() {
     // TEXTURE GEN
     glUniform2f(glGetUniformLocation(shader, "resolution"), size().width(), size().height());
     glUniform1f(glGetUniformLocation(shader, "frequency"), settings.texGenParam1);
+    if (settings.flow) {
+        glUniform1f(glGetUniformLocation(shader, "time"), timer.elapsed());
+    }
+
 
 //    passCameraData();
 //    passGlobalData();
