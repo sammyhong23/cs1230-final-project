@@ -86,26 +86,60 @@ void Realtime::initializeGL() {
     glGenVertexArrays(4, vaos);
 
     initializeVBOSVAOS();
+
+    // TEXTURE GEN
+    std::vector<GLfloat> fullscreen_quad_data =
+    { //     POSITIONS    //
+        -1.f,  1.f, 0.0f,
+        -1.f, -1.f, 0.0f,
+         1.f, -1.f, 0.0f,
+         1.f,  1.f, 0.0f,
+        -1.f,  1.f, 0.0f,
+         1.f, -1.f, 0.0f,
+    };
+
+    glGenBuffers(1, &fullscreen_vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, fullscreen_vbo);
+    glBufferData(GL_ARRAY_BUFFER, fullscreen_quad_data.size()*sizeof(GLfloat), fullscreen_quad_data.data(), GL_STATIC_DRAW);
+    glGenVertexArrays(1, &fullscreen_vao);
+    glBindVertexArray(fullscreen_vao);
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), nullptr);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
 }
 
 void Realtime::paintGL() {
     glUseProgram(shader);
-    passCameraData();
-    passGlobalData();
 
-    for (auto& shape : renderData.shapes) {
-        auto type = primTypeToShapeType(shape.primitive.type);
-        glBindVertexArray(vaos[type]);
-        passShapeData(shape);
-        int lightNum = 0;
-        for (auto& light : renderData.lights) {
-            if (lightNum == 8) break; // limit to 8 lights
-            passLightData(light, lightNum);
-            ++lightNum;
-        }
-        glDrawArrays(GL_TRIANGLES, 0, shapeData[type].size() / 6);
-        glBindVertexArray(0);
-    }
+    // TEXTURE GEN
+    glUniform2f(glGetUniformLocation(shader, "resolution"), size().width(), size().height());
+    glUniform1f(glGetUniformLocation(shader, "frequency"), settings.texGenParam1);
+
+//    passCameraData();
+//    passGlobalData();
+
+//    std::cout << m_elapsedTimer.elapsed() << std::endl;
+
+//    for (auto& shape : renderData.shapes) {
+//        auto type = primTypeToShapeType(shape.primitive.type);
+//        glBindVertexArray(vaos[type]);
+//        passShapeData(shape);
+//        int lightNum = 0;
+//        for (auto& light : renderData.lights) {
+//            if (lightNum == 8) break; // limit to 8 lights
+//            passLightData(light, lightNum);
+//            ++lightNum;
+//        }
+//        glDrawArrays(GL_TRIANGLES, 0, shapeData[type].size() / 6);
+//        glBindVertexArray(0);
+//    }
+
+    glBindVertexArray(fullscreen_vao);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glBindVertexArray(0);
     glUseProgram(0);
 }
 

@@ -76,6 +76,10 @@ private:
     glm::mat4 view;
     glm::mat4 proj;
 
+    // TEXTURE GEN
+    GLuint fullscreen_vbo;
+    GLuint fullscreen_vao;
+
     void initializeVBOSVAOS();
     void updateAllVBOs();
     void updateVBO(int type);

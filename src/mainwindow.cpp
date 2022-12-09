@@ -233,6 +233,8 @@ void MainWindow::finish() {
 void MainWindow::connectUIElements() {
     connectBezier();
     connectUploadFile();
+    connectTexParam1();
+    connectTexParam2();
     connectParam1();
     connectParam2();
     connectNear();
@@ -258,13 +260,13 @@ void MainWindow::connectUploadFile() {
 void MainWindow::connectTexParam1() {
     connect(texp1Slider, &QSlider::valueChanged, this, &MainWindow::onValChangeTexP1);
     connect(texp1Box, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
-            this, &MainWindow::onValChangeP1);
+            this, &MainWindow::onValChangeTexP1);
 }
 
 void MainWindow::connectTexParam2() {
-    connect(texp1Slider, &QSlider::valueChanged, this, &MainWindow::onValChangeTexP2);
-    connect(texp1Box, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
-            this, &MainWindow::onValChangeP1);
+    connect(texp2Slider, &QSlider::valueChanged, this, &MainWindow::onValChangeTexP2);
+    connect(texp2Box, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+            this, &MainWindow::onValChangeTexP2);
 }
 
 void MainWindow::connectParam1() {
