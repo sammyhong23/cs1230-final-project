@@ -180,6 +180,7 @@ vec4 flowmap(sampler2D texmap, vec2 uvcoord) {
     float flowMix = abs((time1 - 0.5f) * 2.0f);
 
     vec2 flow = texture(flowMap, uvcoord).rg;
+    //flow = vec2(0,1);
     flow *= 5.f;
 
     vec4 texture1 = texture(texmap, uvcoord + (flow * time1 * 0.1));

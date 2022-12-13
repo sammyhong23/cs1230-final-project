@@ -110,7 +110,7 @@ void Realtime::initializeGL() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    img = QImage(QString("/Users/justinrhee/Desktop/images/flow3.png"))
+    img = QImage(QString("/Users/justinrhee/Desktop/fm2.png"))
             .convertToFormat(QImage::Format_RGBA8888).mirrored();
     glGenTextures(1, &flowmap);
     glActiveTexture(GL_TEXTURE2);
@@ -141,8 +141,6 @@ void Realtime::initializeGL() {
     glUniform1f(glGetUniformLocation(texgenshader, "frequency"), settings.texGenParam1);
     glUniform1f(glGetUniformLocation(texgenshader, "stretch"), settings.texGenParam2);
     glUseProgram(0);
-
-
 
     makeFBO(&fbo, &fbotex, &fborenderbuff);
     setupFullScreenQuad();
