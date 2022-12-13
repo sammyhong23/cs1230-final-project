@@ -109,7 +109,14 @@ void main() {
         float z4 = noise(pos * 4) / 4;
         float z8 = noise(pos * 8) / 8;
 
-        color = vec3((z1 + z2 + z4 + z8) * 0.5 + 0.2);
+        color = vec3((z1 + z2 + z4 + z8) * 0.5 + 0.5);
+
+        vec2 uv = gl_FragCoord.xy / resolution.xy;
+        uv.x *= resolution.x/resolution.y;
+        uv *= 5;
+        float scale = noise(uv)* 0.3 + 0.8;
+
+        color *= scale;
 
         fragColor = vec4(color, 1.f);
     }
