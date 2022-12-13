@@ -36,6 +36,18 @@ void Realtime::move(float deltat, float units) {
     updateViewProj();
 }
 
+void Realtime::move2(int i, std::tuple<std::vector<float>, std::vector<float>, std::vector<float>> bCurve3D) {
+    if (m_keyMap[Qt::Key_B] && curveLength < get<0>(bCurve3D).size()) {
+        glm::vec4 newCameraPos = glm::vec4(get<0>(bCurve3D)[i], get<1>(bCurve3D)[i], get<2>(bCurve3D)[i], 1.f);
+        curveLength++;
+        camera.setPos(newCameraPos);
+        updateViewProj();
+    }
+    if (m_keyMap[Qt::Key_F]) {
+        curveLength = 0;
+    }
+}
+
 void Realtime::rotateview(float deltaX, float deltaY, float sensitivity) {
     glm::vec3 xrotaxis = glm::vec3(0, 1, 0);
     glm::mat4 xrot = glm::mat4(rotation_mat3(xrotaxis, -deltaX * sensitivity));

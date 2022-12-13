@@ -114,4 +114,7 @@ private:
     GLuint fborenderbuff;
 
     GLuint DEFAULT_FBO = 2;
+
+    int curveLength = 0;
+    void move2(int i, std::tuple<std::vector<float>, std::vector<float>, std::vector<float>> bCurve3D);
 };
