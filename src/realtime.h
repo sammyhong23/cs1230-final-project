@@ -94,4 +94,8 @@ private:
     void move(float deltat, float units);
     void rotateview(float deltaX, float deltaY, float sensitivity);
     glm::mat3 rotation_mat3(glm::vec3 axis, float angle);
+
+    void bezierMove();
+    int curveLength;
+    void move2(int t, std::tuple<std::vector<float>, std::vector<float>, std::vector<float>> tup);
 };
