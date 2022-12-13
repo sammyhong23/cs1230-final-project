@@ -47,6 +47,8 @@ private:
     // Tick Related Variables
     int m_timer;                                        // Stores timer which attempts to run ~60 times per second
     QElapsedTimer m_elapsedTimer;                       // Stores timer which keeps track of actual time between frames
+    QElapsedTimer flowtimer;
+    float t;
 
     // Input Related Variables
     bool m_mouseDown = false;                           // Stores state of left mouse button
@@ -97,4 +99,18 @@ private:
 
     GLuint heightmap;
     GLuint texturemap;
+
+    void makeFBO(GLuint* fbo, GLuint* fbo_texture, GLuint* fbo_renderbuffer);
+    void setupFullScreenQuad();
+    void paintFBO(const GLuint& fbo, const GLuint& shaderid);
+
+    GLuint fullscreen_vbo;
+    GLuint fullscreen_vao;
+
+    GLuint texgenshader;
+    GLuint fbo;
+    GLuint fbotex;
+    GLuint fborenderbuff;
+
+    GLuint DEFAULT_FBO = 2;
 };

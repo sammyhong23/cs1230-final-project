@@ -5,6 +5,8 @@ layout(location = 1) in vec3 osnorm;
 layout(location = 2) in vec2 uv_in;
 layout(location = 3) in vec3 U;
 
+out float height;
+
 out vec3 wspos;
 out vec3 wsnorm;
 out vec2 uv;
@@ -16,7 +18,6 @@ uniform mat4 view;
 uniform mat4 proj;
 
 uniform bool heightmapon;
-uniform bool usepreloaded;
 uniform sampler2D heightmap;
 
 uniform vec2 resolution;
@@ -38,9 +39,12 @@ void main() {
         wsnorm = invtransctm * normalize(osnorm);
     }
 
+    height = texturegen(uv);
+
     gl_Position = proj * view * vec4(wspos, 1.f);
 }
 
+////// bump mapping
 vec3 applyHeightmap() {
     vec2 center = uv_in;
     float uvxunit = 0.005f;
@@ -58,7 +62,7 @@ vec3 applyHeightmap() {
     vec2 uv8 = uv_in + vec2( uvxunit,  uvyunit);
 
     vec3[8] diffs;
-    if (usepreloaded) {
+    if (true) {
         diffs[0] = vec3(uv1, texture(heightmap, uv1).r) - centerpos;
         diffs[1] = vec3(uv2, texture(heightmap, uv2).r) - centerpos;
         diffs[2] = vec3(uv3, texture(heightmap, uv3).r) - centerpos;
@@ -92,6 +96,8 @@ vec3 applyHeightmap() {
     return invtransctm * UVWmat * normalize(normsum);
 }
 
+
+///////////////////////////////////////deprecated texture gen stuff/////////////////////////////////////////////////////////////
 vec2 worleyRandom2(vec2 p) {
     return fract(sin(vec2(dot(p,vec2(127.1, 311.7)),dot(p,vec2(269.5, 183.3)))) * 43758.5453);
 }

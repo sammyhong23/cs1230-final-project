@@ -10,6 +10,8 @@ struct Light {
   float penumbra;
 };
 
+in float height;
+
 in vec3 wspos;
 in vec3 wsnorm;
 in vec2 uv;
@@ -35,6 +37,8 @@ void setDir(Light light, out vec3 lightdir);
 uniform bool texturemapon;
 uniform sampler2D texturemap;
 
+uniform bool worley;
+
 void main() {
     fragColor = ka * oa;
     float ndotl;
@@ -53,6 +57,11 @@ void main() {
 
         if (ndotl > 0) {
             diffuse = (texturemapon) ? texture(texturemap, uv) : kd * od;
+
+            if (worley) {
+                diffuse = vec4(vec3(0.199,0.417,0.990) + height, 1.f);
+            }
+
             vec3 ri = reflect(lightdir, normalize(wsnorm));
             float rdotv = dot(ri, normalize(camerapos - wspos));
             power = (n > 0) ? pow(rdotv, n) : 1;

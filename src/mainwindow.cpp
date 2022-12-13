@@ -50,18 +50,23 @@ void MainWindow::initialize() {
     texparam1_label->setText("Parameter 1:");
     QLabel *texparam2_label = new QLabel(); // Parameter 2 label
     texparam2_label->setText("Parameter 2:");
+    QLabel *worley_label = new QLabel(); // Extra Credit label
+    worley_label->setText("Worley:");
+    worley_label->setFont(font);
     QLabel *speed_label = new QLabel(); // Parameter 2 label
     speed_label->setText("Flow Speed:");
 
-    // Create checkbox for per-pixel filter
     bezier = new QCheckBox();
     bezier->setText(QStringLiteral("Follow Bezier Curve"));
     bezier->setChecked(false);
 
-    // Create checkbox for kernel-based filter
     parallax = new QCheckBox();
     parallax->setText(QStringLiteral("Bump Mapping"));
     parallax->setChecked(false);
+
+    worley = new QCheckBox();
+    worley->setText(QStringLiteral("Worley Noise (Perlin Otherwise)"));
+    worley->setChecked(false);
 
     // Create file uploader for scene file
     uploadFile = new QPushButton();
@@ -235,6 +240,7 @@ void MainWindow::initialize() {
     vLayout->addWidget(texp1Layout);
     vLayout->addWidget(texparam2_label);
     vLayout->addWidget(texp2Layout);
+    vLayout->addWidget(worley);
 
     connectUIElements();
 
@@ -264,6 +270,11 @@ void MainWindow::connectUIElements() {
     connectNear();
     connectFar();
     connectFlowSpeed();
+    connectWorley();
+}
+
+void MainWindow::connectWorley() {
+    connect(worley, &QCheckBox::clicked, this, &MainWindow::onWorley);
 }
 
 void MainWindow::connectBezier() {
@@ -316,6 +327,11 @@ void MainWindow::connectFar() {
     connect(farSlider, &QSlider::valueChanged, this, &MainWindow::onValChangeFarSlider);
     connect(farBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
             this, &MainWindow::onValChangeFarBox);
+}
+
+void MainWindow::onWorley() {
+    settings.worley = !settings.worley;
+    realtime->settingsChanged();
 }
 
 void MainWindow::onBezier() {

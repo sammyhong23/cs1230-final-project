@@ -28,6 +28,7 @@ private:
     void connectFlow();
     void connectFlowSpeed();
     void connectParallax();
+    void connectWorley();
     void connectUploadFile();
 
     Realtime *realtime;
@@ -50,6 +51,8 @@ private:
     QSlider *speedSlider;
     QSpinBox *speedBox;
 
+    QCheckBox *worley;
+
 private slots:
     void onBezier();
     void onParallax();
@@ -64,4 +67,5 @@ private slots:
     void onValChangeNearBox(double newValue);
     void onValChangeFarBox(double newValue);
     void onValChangeSpeedSlider(int newValue);
+    void onWorley();
 };

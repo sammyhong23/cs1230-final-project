@@ -11,6 +11,7 @@ struct Settings {
     float farPlane = 50;
     bool bezier = false;
     bool parallax = false;
+    bool worley = false;
     bool flow = false;
     float texGenParam1 = 1;
     float texGenParam2 = 1;

@@ -77,6 +77,7 @@ void Realtime::initializeGL() {
     isGLEWInit = true;
     glClearColor(0.f, 0.f, 0.f, 1.f);
     shader = ShaderLoader::createShaderProgram(":/resources/shaders/default.vert", ":/resources/shaders/default.frag");
+    texgenshader = ShaderLoader::createShaderProgram(":/resources/shaders/texgen.vert", ":/resources/shaders/texgen.frag");
     updateShapeParams();
 
     memset(vbos, 0, 4 * sizeof(GLuint));
@@ -118,23 +119,35 @@ void Realtime::initializeGL() {
     glUniform1i(glGetUniformLocation(shader, "texturemap"), 0);
     glUniform1f(glGetUniformLocation(shader, "worley"), false);
     glUseProgram(0);
+
+    glUseProgram(texgenshader);
+    glUniform2f(glGetUniformLocation(texgenshader, "resolution"), size().width(), size().height());
+    glUniform1f(glGetUniformLocation(texgenshader, "worley"), settings.worley);
+    glUniform1f(glGetUniformLocation(texgenshader, "frequency"), settings.texGenParam1);
+    glUniform1f(glGetUniformLocation(texgenshader, "stretch"), settings.texGenParam2);
+    glUseProgram(0);
+
+    flowtimer.restart();
+
+    makeFBO(&fbo, &fbotex, &fborenderbuff);
+    setupFullScreenQuad();
 }
 
 void Realtime::paintGL() {
+    glBindFramebuffer(GL_FRAMEBUFFER, DEFAULT_FBO);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
     glUseProgram(shader);
 
-    glUniform2f(glGetUniformLocation(shader, "resolution"), size().width(), size().height());
-    glUniform1f(glGetUniformLocation(shader, "frequency"), settings.texGenParam1);
     if (settings.flow) {
-        glUniform1f(glGetUniformLocation(shader, "time"), 0);
+        glUniform1f(glGetUniformLocation(shader, "time"), flowtimer.elapsed());
     }
-    glUniform1i(glGetUniformLocation(shader, "parallax"), settings.parallax);
-    glUniform1f(glGetUniformLocation(shader, "stretch"), settings.texGenParam2);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texturemap);
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, heightmap);
+    glBindTexture(GL_TEXTURE_2D, fbotex);
 
     passCameraData();
     passGlobalData();
@@ -153,7 +166,10 @@ void Realtime::paintGL() {
         glBindVertexArray(0);
     }
 
+
+
     glBindTexture(GL_TEXTURE_2D, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glUseProgram(0);
 }
 
@@ -162,6 +178,20 @@ void Realtime::resizeGL(int w, int h) {
     glViewport(0, 0, size().width() * m_devicePixelRatio, size().height() * m_devicePixelRatio);
 
     // Students: anything requiring OpenGL calls when the program starts should be done here
+    glUseProgram(shader);
+    glUniform2f(glGetUniformLocation(shader, "resolution"), size().width(), size().height());
+    glUseProgram(0);
+
+    glUseProgram(texgenshader);
+    glUniform2f(glGetUniformLocation(texgenshader, "resolution"), size().width(), size().height());
+    glUseProgram(0);
+
+    glDeleteTextures(1, &fbotex);
+    glDeleteRenderbuffers(1, &fborenderbuff);
+    glDeleteFramebuffers(1, &fbo);
+
+    makeFBO(&fbo, &fbotex, &fborenderbuff);
+
     camera.setAspectRatio(w, h);
     updateViewProj();
 }
@@ -191,7 +221,18 @@ void Realtime::settingsChanged() {
         updateAllVBOs();
         glUseProgram(shader);
         glUniform1f(glGetUniformLocation(shader, "heightmapon"), settings.parallax);
+        glUniform1f(glGetUniformLocation(shader, "worley"), settings.worley);
+        glUniform1f(glGetUniformLocation(shader, "frequency"), settings.texGenParam1);
+        glUniform1f(glGetUniformLocation(shader, "stretch"), settings.texGenParam2);
         glUseProgram(0);
+
+        glUseProgram(texgenshader);
+        glUniform1f(glGetUniformLocation(texgenshader, "worley"), settings.worley);
+        glUniform1f(glGetUniformLocation(texgenshader, "frequency"), settings.texGenParam1);
+        glUniform1f(glGetUniformLocation(texgenshader, "stretch"), settings.texGenParam2);
+        glUseProgram(0);
+
+        paintFBO(fbo, texgenshader);
     }
 
     update(); // asks for a PaintGL() call to occur
@@ -320,4 +361,67 @@ void Realtime::updateShapeParams() {
     cone->updateParams(settings.shapeParameter1, settings.shapeParameter2);
     cylinder->updateParams(settings.shapeParameter1, settings.shapeParameter2);
     sphere->updateParams(settings.shapeParameter1, settings.shapeParameter2);
+}
+
+void Realtime::makeFBO(GLuint* fbo, GLuint* fbo_texture, GLuint* fbo_renderbuffer) {
+    glGenTextures(1, fbo_texture);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, *fbo_texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size().width(), size().height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    glGenRenderbuffers(1, fbo_renderbuffer);
+    glBindRenderbuffer(GL_RENDERBUFFER, *fbo_renderbuffer);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, size().width(), size().height());
+    glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+    glGenFramebuffers(1, fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, *fbo);
+
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *fbo_texture, 0);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, *fbo_renderbuffer);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void Realtime::setupFullScreenQuad() {
+    std::vector<GLfloat> fullscreen_quad_data =
+    {
+        -1.f,  1.f, 0.0f, 0.f, 1.f,
+        -1.f, -1.f, 0.0f, 0.f, 0.f,
+         1.f, -1.f, 0.0f, 1.f, 0.f,
+         1.f,  1.f, 0.0f, 1.f, 1.f,
+        -1.f,  1.f, 0.0f, 0.f, 1.f,
+         1.f, -1.f, 0.0f, 1.f, 0.f
+    };
+
+    glGenBuffers(1, &fullscreen_vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, fullscreen_vbo);
+    glBufferData(GL_ARRAY_BUFFER, fullscreen_quad_data.size()*sizeof(GLfloat), fullscreen_quad_data.data(), GL_STATIC_DRAW);
+    glGenVertexArrays(1, &fullscreen_vao);
+    glBindVertexArray(fullscreen_vao);
+
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), reinterpret_cast<void*>(0 * sizeof(GLfloat)));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), reinterpret_cast<void*>(3 * sizeof(GLfloat)));
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+}
+
+void Realtime::paintFBO(const GLuint& fbo, const GLuint& shaderid) {
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    //glViewport(0, 0, size().width(), size().height());
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glUseProgram(shaderid);
+    glBindVertexArray(fullscreen_vao);
+
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glBindVertexArray(0);
+    glUseProgram(0);
 }
