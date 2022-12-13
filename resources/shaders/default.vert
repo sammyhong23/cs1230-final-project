@@ -18,7 +18,13 @@ uniform mat4 proj;
 uniform bool heightmapon;
 uniform sampler2D heightmap;
 
+uniform vec2 resolution;
+uniform float frequency;
+uniform float stretch;
+uniform float time;
+
 vec3 applyHeightmap();
+float texturegen(vec2 coord);
 
 void main() {
     uv = uv_in;
@@ -29,6 +35,8 @@ void main() {
     } else {
         wsnorm = invtransctm * normalize(osnorm);
     }
+
+    wsnorm = vec3(texturegen(uv_in));
 
     gl_Position = proj * view * vec4(wspos, 1.f);
 }
@@ -50,14 +58,22 @@ vec3 applyHeightmap() {
     vec2 uv8 = uv_in + vec2( uvxunit,  uvyunit);
 
     vec3[8] diffs;
-    diffs[0] = vec3(uv1, texture(heightmap, uv1).r) - centerpos;
-    diffs[1] = vec3(uv2, texture(heightmap, uv2).r) - centerpos;
-    diffs[2] = vec3(uv3, texture(heightmap, uv3).r) - centerpos;
-    diffs[3] = vec3(uv4, texture(heightmap, uv4).r) - centerpos;
-    diffs[4] = vec3(uv5, texture(heightmap, uv5).r) - centerpos;
-    diffs[5] = vec3(uv6, texture(heightmap, uv6).r) - centerpos;
-    diffs[6] = vec3(uv7, texture(heightmap, uv7).r) - centerpos;
-    diffs[7] = vec3(uv8, texture(heightmap, uv8).r) - centerpos;
+//    diffs[0] = vec3(uv1, texture(heightmap, uv1).r) - centerpos;
+//    diffs[1] = vec3(uv2, texture(heightmap, uv2).r) - centerpos;
+//    diffs[2] = vec3(uv3, texture(heightmap, uv3).r) - centerpos;
+//    diffs[3] = vec3(uv4, texture(heightmap, uv4).r) - centerpos;
+//    diffs[4] = vec3(uv5, texture(heightmap, uv5).r) - centerpos;
+//    diffs[5] = vec3(uv6, texture(heightmap, uv6).r) - centerpos;
+//    diffs[6] = vec3(uv7, texture(heightmap, uv7).r) - centerpos;
+//    diffs[7] = vec3(uv8, texture(heightmap, uv8).r) - centerpos;
+    diffs[0] = vec3(uv1, texturegen(uv1)) - centerpos;
+    diffs[1] = vec3(uv2, texturegen(uv2)) - centerpos;
+    diffs[2] = vec3(uv3, texturegen(uv3)) - centerpos;
+    diffs[3] = vec3(uv4, texturegen(uv4)) - centerpos;
+    diffs[4] = vec3(uv5, texturegen(uv5)) - centerpos;
+    diffs[5] = vec3(uv6, texturegen(uv6)) - centerpos;
+    diffs[6] = vec3(uv7, texturegen(uv7)) - centerpos;
+    diffs[7] = vec3(uv8, texturegen(uv8)) - centerpos;
 
     vec3 normsum = vec3(0);
     for (int i = 0; i < 7; ++i) {
@@ -71,4 +87,71 @@ vec3 applyHeightmap() {
     mat3 UVWmat = mat3(normalize(U),V,W);
 
     return invtransctm * UVWmat * normalize(normsum);
+}
+
+vec2 worleyRandom2(vec2 p) {
+    return fract(sin(vec2(dot(p,vec2(127.1, 311.7)),dot(p,vec2(269.5, 183.3)))) * 43758.5453);
+}
+
+vec2 perlinRandom2(vec2 p) {
+    p = vec2( dot(p,vec2(127.1, 311.7)), dot(p,vec2(269.5, 183.3)));
+        return -1.0 + 2.0 * fract(sin(p) * 43758.5453123);
+}
+
+float noise(vec2 st) {
+    vec2 i = floor(st);
+    vec2 f = fract(st);
+
+    vec2 u = f*f*(3.0-2.0*f);
+
+    return mix( mix( dot( perlinRandom2(i + vec2(0.0,0.0) ), f - vec2(0.0,0.0) ),
+                     dot( perlinRandom2(i + vec2(1.0,0.0) ), f - vec2(1.0,0.0) ), u.x),
+                mix( dot( perlinRandom2(i + vec2(0.0,1.0) ), f - vec2(0.0,1.0) ),
+                     dot( perlinRandom2(i + vec2(1.0,1.0) ), f - vec2(1.0,1.0) ), u.x), u.y);
+}
+
+float texturegen(vec2 coord) {
+    if (true) {
+            // worley
+            vec2 st = coord;
+            st.x *= resolution.x/resolution.y;
+
+            // Scale
+            st *= frequency;
+
+            // Tile the space
+            vec2 i_st = floor(st);
+            vec2 f_st = fract(st);
+
+            float m_dist = 10.;  // minimum distance
+
+            for (int j=-1; j<=1; j++ ) {
+                for (int i=-1; i<=1; i++ ) {
+                    vec2 neighbor = vec2(float(i),float(j));
+                    vec2 point = worleyRandom2(i_st + neighbor);
+                    point = 0.5 + 0.5*sin(0.4*0.001*time + 5*point);
+                    vec2 diff = neighbor + point - f_st;
+                    float dist = length(diff);
+
+                    m_dist = min(m_dist, dist);
+                }
+            }
+
+            return 0.3 * m_dist * m_dist;
+        } else {
+            // perlin
+            vec2 st = coord;
+            st.x *= resolution.x/resolution.y;
+            st.x /= stretch;
+
+            vec2 pos = vec2(st * frequency);
+
+            // octaves
+            float z1 = noise(pos);
+            float z2 = noise(pos * 2) / 2;
+            float z4 = noise(pos * 4) / 4;
+            float z8 = noise(pos * 8) / 8;
+
+            return (z1 + z2 + z4 + z8) * 0.5 + 0.5;
+        }
 }

@@ -99,7 +99,7 @@ void Realtime::initializeGL() {
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    img = QImage(QString("/Users/justinrhee/Desktop/spiderman.png"))
+    img = QImage(QString("/Users/justinrhee/Desktop/watertex.jpeg"))
             .convertToFormat(QImage::Format_RGBA8888).mirrored();
     glGenTextures(1, &heightmap);
     glActiveTexture(GL_TEXTURE1);
