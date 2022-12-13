@@ -41,10 +41,16 @@ void Realtime::move2(int i, std::tuple<std::vector<float>, std::vector<float>, s
         glm::vec4 newCameraPos = glm::vec4(get<0>(bCurve3D)[i], get<1>(bCurve3D)[i], get<2>(bCurve3D)[i], 1.f);
         curveLength++;
         camera.setPos(newCameraPos);
+        camera.setLook(-glm::normalize(newCameraPos));
         updateViewProj();
     }
     if (m_keyMap[Qt::Key_F]) {
         curveLength = 0;
+        glm::vec4 newCameraPos = glm::vec4(get<0>(bCurve3D)[i], get<1>(bCurve3D)[i], get<2>(bCurve3D)[i], 1.f);
+        curveLength++;
+        camera.setPos(newCameraPos);
+        camera.setLook(-glm::normalize(newCameraPos));
+        updateViewProj();
     }
 }
 

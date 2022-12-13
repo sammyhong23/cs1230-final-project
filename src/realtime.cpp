@@ -297,8 +297,39 @@ void Realtime::timerEvent(QTimerEvent *event) {
     m_elapsedTimer.restart();
 
     // Use deltaTime and m_keyMap here to move around
-    float units = 5.f;
-    move(deltaTime, units);
+
+    if (settings.bezier) {
+        std::vector<float> xX1{12.0f, 15.0f, 23.f, 26.0f};
+        std::vector<float> yY1{6.0f, 6.0f, 6.0f, 6.0f};
+        std::vector<float> zZ1{6.0f, -2.0f, -2.0f, 6.0f};
+
+        std::vector<float> xX2{26.f, 29.0f, 37.0f, 40.0f};
+        std::vector<float> yY2{6.0f, 6.0f, 6.0f, 6.0f};
+        std::vector<float> zZ2{6.f, 8.0f, 9.0f, 6.f};
+
+        std::tuple<std::vector<float>, std::vector<float>, std::vector<float>> bCurve3D1 = computeBesierCurve3D(xX1, yY1, zZ1);
+        std::tuple<std::vector<float>, std::vector<float>, std::vector<float>> bCurve3D2 = computeBesierCurve3D(xX2, yY2, zZ2);
+
+        std::vector<float> vecX1 = get<0>(bCurve3D1);
+        std::vector<float> vecY1 = get<1>(bCurve3D1);
+        std::vector<float> vecZ1 = get<2>(bCurve3D1);
+        std::vector<float> vecX2 = get<0>(bCurve3D2);
+        std::vector<float> vecY2 = get<1>(bCurve3D2);
+        std::vector<float> vecZ2 = get<2>(bCurve3D2);
+
+        vecX1.insert( vecX1.end(), vecX2.begin(), vecX2.end() );
+        vecY1.insert( vecY1.end(), vecY2.begin(), vecY2.end() );
+        vecZ1.insert( vecZ1.end(), vecZ2.begin(), vecZ2.end() );
+
+        std::tuple<std::vector<float>,
+                std::vector<float>,
+                std::vector<float>> bCurveCombined = std::make_tuple(vecX1, vecY1, vecZ1);
+
+        move2(curveLength, bCurveCombined);
+    } else {
+        float units = 5.f;
+        move(deltaTime, units);
+    }
 
     update(); // asks for a PaintGL() call to occur
 }
@@ -407,10 +438,10 @@ void Realtime::setupFullScreenQuad() {
     {
         -1.f,  1.f, 0.0f, 0.f, 1.f,
         -1.f, -1.f, 0.0f, 0.f, 0.f,
-         1.f, -1.f, 0.0f, 1.f, 0.f,
-         1.f,  1.f, 0.0f, 1.f, 1.f,
+        1.f, -1.f, 0.0f, 1.f, 0.f,
+        1.f,  1.f, 0.0f, 1.f, 1.f,
         -1.f,  1.f, 0.0f, 0.f, 1.f,
-         1.f, -1.f, 0.0f, 1.f, 0.f
+        1.f, -1.f, 0.0f, 1.f, 0.f
     };
 
     glGenBuffers(1, &fullscreen_vbo);
@@ -440,4 +471,29 @@ void Realtime::paintFBO(const GLuint& fbo, const GLuint& shaderid) {
     glBindTexture(GL_TEXTURE_2D, 0);
     glBindVertexArray(0);
     glUseProgram(0);
+}
+
+std::tuple<std::vector<float>, std::vector<float>, std::vector<float>> Realtime::computeBesierCurve3D(std::vector<float> xX,
+                                                                                                      std::vector<float> yY,
+                                                                                                      std::vector<float> zZ) {
+    std::vector<float> bCurveX;
+    std::vector<float> bCurveY;
+    std::vector<float> bCurveZ;
+    float bCurveXt;
+    float bCurveYt;
+    float bCurveZt;
+
+    for (float t = 0.005f; t <= 1.f; t += 0.01f)
+    {
+
+        bCurveXt = std::pow((1 - t), 3) * xX[0] + 3 * std::pow((1 - t), 2) * t * xX[1] + 3 * std::pow((1 - t), 1) * std::pow(t, 2) * xX[2] + std::pow(t, 3) * xX[3];
+        bCurveYt = std::pow((1 - t), 3) * yY[0] + 3 * std::pow((1 - t), 2) * t * yY[1] + 3 * std::pow((1 - t), 1) * std::pow(t, 2) * yY[2] + std::pow(t, 3) * yY[3];
+        bCurveZt = std::pow((1 - t), 3) * zZ[0] + 3 * std::pow((1 - t), 2) * t * zZ[1] + 3 * std::pow((1 - t), 1) * std::pow(t, 2) * yY[2] + std::pow(t, 3) * zZ[3];
+
+        bCurveX.push_back(bCurveXt);
+        bCurveY.push_back(bCurveYt);
+        bCurveZ.push_back(bCurveZt);
+    }
+
+    return std::make_tuple(bCurveX, bCurveY, bCurveZ);
 }

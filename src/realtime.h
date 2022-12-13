@@ -117,4 +117,7 @@ private:
 
     int curveLength = 0;
     void move2(int i, std::tuple<std::vector<float>, std::vector<float>, std::vector<float>> bCurve3D);
+    std::tuple<std::vector<float>, std::vector<float>, std::vector<float>> computeBesierCurve3D(std::vector<float> xX,
+                                                                                                std::vector<float> yY,
+                                                                                                std::vector<float> zZ);
 };
