@@ -232,6 +232,8 @@ void MainWindow::connectUIElements() {
     connectBezier();
     connectParallax();
     connectFlow();
+    connectTexParam1();
+    connectTexParam2();
     connectUploadFile();
     connectParam1();
     connectParam2();

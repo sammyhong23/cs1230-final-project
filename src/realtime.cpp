@@ -122,6 +122,14 @@ void Realtime::initializeGL() {
 void Realtime::paintGL() {
     glUseProgram(shader);
 
+    glUniform2f(glGetUniformLocation(shader, "resolution"), size().width(), size().height());
+    glUniform1f(glGetUniformLocation(shader, "frequency"), settings.texGenParam1);
+    if (settings.flow) {
+        glUniform1f(glGetUniformLocation(shader, "time"), 0);
+    }
+    glUniform1i(glGetUniformLocation(shader, "parallax"), settings.parallax);
+    glUniform1f(glGetUniformLocation(shader, "stretch"), settings.texGenParam2);
+
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texturemap);
     glActiveTexture(GL_TEXTURE1);

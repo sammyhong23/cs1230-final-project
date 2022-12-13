@@ -62,7 +62,6 @@ void main() {
     }
 
     fragColor = clamp(fragColor, 0.f, 1.f);
-    fragColor = vec4(wsnorm,1);
 }
 
 float falloff(float angle, float inner, float penumbra) {

@@ -36,8 +36,6 @@ void main() {
         wsnorm = invtransctm * normalize(osnorm);
     }
 
-    wsnorm = vec3(texturegen(uv_in));
-
     gl_Position = proj * view * vec4(wspos, 1.f);
 }
 
