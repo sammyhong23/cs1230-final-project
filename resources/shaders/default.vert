@@ -20,6 +20,10 @@ uniform mat4 proj;
 uniform bool heightmapon;
 uniform sampler2D heightmap;
 
+uniform sampler2D flowMap;
+uniform float flowSpeed;
+vec4 flowmap(sampler2D texmap, vec2 uvcoord);
+
 uniform vec2 resolution;
 uniform float frequency;
 uniform float stretch;
@@ -63,14 +67,14 @@ vec3 applyHeightmap() {
 
     vec3[8] diffs;
     if (true) {
-        diffs[0] = vec3(uv1, texture(heightmap, uv1).r) - centerpos;
-        diffs[1] = vec3(uv2, texture(heightmap, uv2).r) - centerpos;
-        diffs[2] = vec3(uv3, texture(heightmap, uv3).r) - centerpos;
-        diffs[3] = vec3(uv4, texture(heightmap, uv4).r) - centerpos;
-        diffs[4] = vec3(uv5, texture(heightmap, uv5).r) - centerpos;
-        diffs[5] = vec3(uv6, texture(heightmap, uv6).r) - centerpos;
-        diffs[6] = vec3(uv7, texture(heightmap, uv7).r) - centerpos;
-        diffs[7] = vec3(uv8, texture(heightmap, uv8).r) - centerpos;
+        diffs[0] = vec3(uv1, flowmap(heightmap, uv1).r) - centerpos;
+        diffs[1] = vec3(uv2, flowmap(heightmap, uv2).r) - centerpos;
+        diffs[2] = vec3(uv3, flowmap(heightmap, uv3).r) - centerpos;
+        diffs[3] = vec3(uv4, flowmap(heightmap, uv4).r) - centerpos;
+        diffs[4] = vec3(uv5, flowmap(heightmap, uv5).r) - centerpos;
+        diffs[5] = vec3(uv6, flowmap(heightmap, uv6).r) - centerpos;
+        diffs[6] = vec3(uv7, flowmap(heightmap, uv7).r) - centerpos;
+        diffs[7] = vec3(uv8, flowmap(heightmap, uv8).r) - centerpos;
     } else {
         diffs[0] = vec3(uv1, texturegen(uv1)) - centerpos;
         diffs[1] = vec3(uv2, texturegen(uv2)) - centerpos;
@@ -163,4 +167,22 @@ float texturegen(vec2 coord) {
 
             return (z1 + z2 + z4 + z8) * 0.5 + 0.5;
         }
+}
+
+/////////////////////////// flow map stuff
+
+vec4 flowmap(sampler2D texmap, vec2 uvcoord) {
+    if (time == 0) {
+        return texture(texmap, uvcoord);
+    }
+    float time1 = fract(time * flowSpeed);
+    float time2 = fract(time1 + 0.5f);
+    float flowMix = abs((time1 - 0.5f) * 2.0f);
+
+    vec2 flow = texture(flowMap, uvcoord).rg;
+    flow *= 5.f;
+
+    vec4 texture1 = texture(texmap, uvcoord + (flow * time1 * 0.1));
+    vec4 texture2 = texture(texmap, uvcoord + (flow * time2 * 0.1));
+    return mix(texture1, texture2, flowMix);
 }

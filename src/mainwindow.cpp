@@ -139,12 +139,12 @@ void MainWindow::initialize() {
     speedSlider = new QSlider(Qt::Orientation::Horizontal);
     speedSlider->setTickInterval(1);
     speedSlider->setMinimum(1);
-    speedSlider->setMaximum(100);
+    speedSlider->setMaximum(10);
     speedSlider->setValue(1);
 
     speedBox = new QSpinBox();
     speedBox->setMinimum(1);
-    speedBox->setMaximum(100);
+    speedBox->setMaximum(10);
     speedBox->setSingleStep(1);
     speedBox->setValue(1);
 

@@ -99,6 +99,7 @@ private:
 
     GLuint heightmap;
     GLuint texturemap;
+    GLuint flowmap;
 
     void makeFBO(GLuint* fbo, GLuint* fbo_texture, GLuint* fbo_renderbuffer);
     void setupFullScreenQuad();

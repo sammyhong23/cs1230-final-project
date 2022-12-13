@@ -36,8 +36,16 @@ void setDir(Light light, out vec3 lightdir);
 
 uniform bool texturemapon;
 uniform sampler2D texturemap;
+uniform sampler2D flowMap;
+uniform float flowSpeed;
+
+uniform sampler2D heightmap;
+
+uniform float time;
 
 uniform bool worley;
+
+vec4 flowmap(sampler2D texmap, vec2 uvcoord);
 
 void main() {
     fragColor = ka * oa;
@@ -56,11 +64,7 @@ void main() {
         ndotl = dot(-lightdir, normalize(wsnorm));
 
         if (ndotl > 0) {
-            diffuse = (texturemapon) ? texture(texturemap, uv) : kd * od;
-
-            if (worley) {
-                diffuse = vec4(vec3(0.199,0.417,0.990) + height, 1.f);
-            }
+            diffuse = (texturemapon) ? flowmap(texturemap, uv) : kd * od;
 
             vec3 ri = reflect(lightdir, normalize(wsnorm));
             float rdotv = dot(ri, normalize(camerapos - wspos));
@@ -113,3 +117,21 @@ void setAtt(Light light, out float fatt) {
 void setDir(Light light, out vec3 lightdir) {
     lightdir = (light.type == 0) ? normalize(light.dir) : normalize(wspos - light.pos);
 }
+
+vec4 flowmap(sampler2D texmap, vec2 uvcoord) {
+    if (time == 0) {
+        return texture(texmap, uvcoord);
+    }
+    float time1 = fract(time * flowSpeed);
+    float time2 = fract(time1 + 0.5f);
+    float flowMix = abs((time1 - 0.5f) * 2.0f);
+
+    vec2 flow = texture(flowMap, uvcoord).rg;
+    flow *= 5.f;
+
+    vec4 texture1 = texture(texmap, uvcoord + (flow * time1 * 0.1));
+    vec4 texture2 = texture(texmap, uvcoord + (flow * time2 * 0.1));
+    return mix(texture1, texture2, flowMix);
+}
+
+

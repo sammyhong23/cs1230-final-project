@@ -88,7 +88,7 @@ void Realtime::initializeGL() {
 
     initializeVBOSVAOS();
 
-    QImage img = QImage(QString("/Users/justinrhee/Desktop/water.jpeg"))
+    QImage img = QImage(QString("/Users/justinrhee/Desktop/images/tiled_water2.png"))
             .convertToFormat(QImage::Format_RGBA8888).mirrored();
     glGenTextures(1, &texturemap);
     glActiveTexture(GL_TEXTURE0);
@@ -100,7 +100,7 @@ void Realtime::initializeGL() {
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    img = QImage(QString("/Users/justinrhee/Desktop/watertex.jpeg"))
+    img = QImage(QString("/Users/justinrhee/Desktop/watercolor.jpeg"))
             .convertToFormat(QImage::Format_RGBA8888).mirrored();
     glGenTextures(1, &heightmap);
     glActiveTexture(GL_TEXTURE1);
@@ -110,14 +110,29 @@ void Realtime::initializeGL() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
+    img = QImage(QString("/Users/justinrhee/Desktop/images/flow3.png"))
+            .convertToFormat(QImage::Format_RGBA8888).mirrored();
+    glGenTextures(1, &flowmap);
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, flowmap);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img.width(), img.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, img.bits());
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
     glBindTexture(GL_TEXTURE_2D, 0);
+
+    flowtimer.restart();
 
     glUseProgram(shader);
     glUniform1f(glGetUniformLocation(shader, "texturemapon"), false);
     glUniform1f(glGetUniformLocation(shader, "heightmapon"), false);
     glUniform1i(glGetUniformLocation(shader, "heightmap"), 1);
     glUniform1i(glGetUniformLocation(shader, "texturemap"), 0);
+    glUniform1i(glGetUniformLocation(shader, "flowMap"), 2);
     glUniform1f(glGetUniformLocation(shader, "worley"), false);
+    glUniform1f(glGetUniformLocation(shader, "flowSpeed"), 1.f / 10000.f);
+    glUniform1f(glGetUniformLocation(shader, "time"), 0);
     glUseProgram(0);
 
     glUseProgram(texgenshader);
@@ -127,7 +142,7 @@ void Realtime::initializeGL() {
     glUniform1f(glGetUniformLocation(texgenshader, "stretch"), settings.texGenParam2);
     glUseProgram(0);
 
-    flowtimer.restart();
+
 
     makeFBO(&fbo, &fbotex, &fborenderbuff);
     setupFullScreenQuad();
@@ -136,7 +151,6 @@ void Realtime::initializeGL() {
 void Realtime::paintGL() {
     glBindFramebuffer(GL_FRAMEBUFFER, DEFAULT_FBO);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 
     glUseProgram(shader);
 
@@ -148,6 +162,8 @@ void Realtime::paintGL() {
     glBindTexture(GL_TEXTURE_2D, texturemap);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, fbotex);
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, flowmap);
 
     passCameraData();
     passGlobalData();
@@ -220,10 +236,12 @@ void Realtime::settingsChanged() {
         this->makeCurrent();
         updateAllVBOs();
         glUseProgram(shader);
+        glUniform1f(glGetUniformLocation(shader, "time"), 0);
         glUniform1f(glGetUniformLocation(shader, "heightmapon"), settings.parallax);
         glUniform1f(glGetUniformLocation(shader, "worley"), settings.worley);
         glUniform1f(glGetUniformLocation(shader, "frequency"), settings.texGenParam1);
         glUniform1f(glGetUniformLocation(shader, "stretch"), settings.texGenParam2);
+        glUniform1f(glGetUniformLocation(shader, "flowSpeed"), (float) settings.flowspeed / 10000.f);
         glUseProgram(0);
 
         glUseProgram(texgenshader);
