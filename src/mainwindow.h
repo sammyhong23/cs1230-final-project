@@ -26,6 +26,7 @@ private:
     void connectFar();
     void connectBezier();
     void connectFlow();
+    void connectFlowSpeed();
     void connectParallax();
     void connectUploadFile();
 
@@ -46,6 +47,8 @@ private:
     QSlider *farSlider;
     QDoubleSpinBox *nearBox;
     QDoubleSpinBox *farBox;
+    QSlider *speedSlider;
+    QSpinBox *speedBox;
 
 private slots:
     void onBezier();
@@ -60,4 +63,5 @@ private slots:
     void onValChangeFarSlider(int newValue);
     void onValChangeNearBox(double newValue);
     void onValChangeFarBox(double newValue);
+    void onValChangeSpeedSlider(int newValue);
 };
