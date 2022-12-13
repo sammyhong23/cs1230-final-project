@@ -14,7 +14,7 @@ uniform float time;
 void main()
 {
     vec2 flow = texture(flowMap, uvs).xy;
-    flow = (flow + 0.5f) * 10.0f;
+    flow = (flow + 0.5f) * 5.0f;
     float time1 = fract(time * flowSpeed);
     float time2 = fract(time1 + 0.5f);
     float flowMix = abs((time1 - 0.5f) * 2.0f);

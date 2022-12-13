@@ -92,6 +92,11 @@ qt6_add_resources(${PROJECT_NAME} "Resources"
         resources/images/kitten.png
         resources/images/water.png
         resources/images/flow.png
+        resources/images/flow2.png
+        resources/images/flow3.png
+        resources/images/ripples.png
+        resources/images/tiled_water.png
+        resources/images/tiled_water2.png
 )
 
 # GLEW: this provides support for Windows (including 64-bit)

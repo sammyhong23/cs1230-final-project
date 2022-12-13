@@ -88,10 +88,10 @@ void Realtime::initializeGL() {
 
     initializeVBOSVAOS();
 
-    image = QImage(QString(":/resources/images/water.png"));
+    image = QImage(QString(":/resources/images/tiled_water2.png"));
     image = image.convertToFormat(QImage::Format_RGBA8888).mirrored();
 
-    flow_image = QImage(QString(":/resources/images/flow3.png"));
+    flow_image = QImage(QString(":/resources/images/flow.png"));
     flow_image = flow_image.convertToFormat(QImage::Format_RGBA8888).mirrored();
 
     glGenTextures(1, &image_texture);
