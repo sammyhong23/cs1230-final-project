@@ -99,7 +99,7 @@ void Realtime::initializeGL() {
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    img = QImage(QString("/Users/justinrhee/Desktop/watertex.jpeg"))
+    img = QImage(QString("/Users/justinrhee/Desktop/spiderman.png"))
             .convertToFormat(QImage::Format_RGBA8888).mirrored();
     glGenTextures(1, &heightmap);
     glActiveTexture(GL_TEXTURE1);
@@ -112,7 +112,7 @@ void Realtime::initializeGL() {
     glBindTexture(GL_TEXTURE_2D, 0);
 
     glUseProgram(shader);
-    glUniform1f(glGetUniformLocation(shader, "texturemapon"), true);
+    glUniform1f(glGetUniformLocation(shader, "texturemapon"), false);
     glUniform1f(glGetUniformLocation(shader, "heightmapon"), false);
     glUniform1i(glGetUniformLocation(shader, "heightmap"), 1);
     glUniform1i(glGetUniformLocation(shader, "texturemap"), 0);
