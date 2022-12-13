@@ -116,6 +116,7 @@ void Realtime::initializeGL() {
     glUniform1f(glGetUniformLocation(shader, "heightmapon"), false);
     glUniform1i(glGetUniformLocation(shader, "heightmap"), 1);
     glUniform1i(glGetUniformLocation(shader, "texturemap"), 0);
+    glUniform1f(glGetUniformLocation(shader, "worley"), true);
     glUseProgram(0);
 }
 

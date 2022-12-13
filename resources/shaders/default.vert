@@ -16,11 +16,13 @@ uniform mat4 view;
 uniform mat4 proj;
 
 uniform bool heightmapon;
+uniform bool usepreloaded;
 uniform sampler2D heightmap;
 
 uniform vec2 resolution;
 uniform float frequency;
 uniform float stretch;
+uniform bool worley;
 uniform float time;
 
 vec3 applyHeightmap();
@@ -56,22 +58,25 @@ vec3 applyHeightmap() {
     vec2 uv8 = uv_in + vec2( uvxunit,  uvyunit);
 
     vec3[8] diffs;
-//    diffs[0] = vec3(uv1, texture(heightmap, uv1).r) - centerpos;
-//    diffs[1] = vec3(uv2, texture(heightmap, uv2).r) - centerpos;
-//    diffs[2] = vec3(uv3, texture(heightmap, uv3).r) - centerpos;
-//    diffs[3] = vec3(uv4, texture(heightmap, uv4).r) - centerpos;
-//    diffs[4] = vec3(uv5, texture(heightmap, uv5).r) - centerpos;
-//    diffs[5] = vec3(uv6, texture(heightmap, uv6).r) - centerpos;
-//    diffs[6] = vec3(uv7, texture(heightmap, uv7).r) - centerpos;
-//    diffs[7] = vec3(uv8, texture(heightmap, uv8).r) - centerpos;
-    diffs[0] = vec3(uv1, texturegen(uv1)) - centerpos;
-    diffs[1] = vec3(uv2, texturegen(uv2)) - centerpos;
-    diffs[2] = vec3(uv3, texturegen(uv3)) - centerpos;
-    diffs[3] = vec3(uv4, texturegen(uv4)) - centerpos;
-    diffs[4] = vec3(uv5, texturegen(uv5)) - centerpos;
-    diffs[5] = vec3(uv6, texturegen(uv6)) - centerpos;
-    diffs[6] = vec3(uv7, texturegen(uv7)) - centerpos;
-    diffs[7] = vec3(uv8, texturegen(uv8)) - centerpos;
+    if (usepreloaded) {
+        diffs[0] = vec3(uv1, texture(heightmap, uv1).r) - centerpos;
+        diffs[1] = vec3(uv2, texture(heightmap, uv2).r) - centerpos;
+        diffs[2] = vec3(uv3, texture(heightmap, uv3).r) - centerpos;
+        diffs[3] = vec3(uv4, texture(heightmap, uv4).r) - centerpos;
+        diffs[4] = vec3(uv5, texture(heightmap, uv5).r) - centerpos;
+        diffs[5] = vec3(uv6, texture(heightmap, uv6).r) - centerpos;
+        diffs[6] = vec3(uv7, texture(heightmap, uv7).r) - centerpos;
+        diffs[7] = vec3(uv8, texture(heightmap, uv8).r) - centerpos;
+    } else {
+        diffs[0] = vec3(uv1, texturegen(uv1)) - centerpos;
+        diffs[1] = vec3(uv2, texturegen(uv2)) - centerpos;
+        diffs[2] = vec3(uv3, texturegen(uv3)) - centerpos;
+        diffs[3] = vec3(uv4, texturegen(uv4)) - centerpos;
+        diffs[4] = vec3(uv5, texturegen(uv5)) - centerpos;
+        diffs[5] = vec3(uv6, texturegen(uv6)) - centerpos;
+        diffs[6] = vec3(uv7, texturegen(uv7)) - centerpos;
+        diffs[7] = vec3(uv8, texturegen(uv8)) - centerpos;
+    }
 
     vec3 normsum = vec3(0);
     for (int i = 0; i < 7; ++i) {
@@ -109,7 +114,7 @@ float noise(vec2 st) {
 }
 
 float texturegen(vec2 coord) {
-    if (true) {
+    if (worley) {
             // worley
             vec2 st = coord;
             st.x *= resolution.x/resolution.y;

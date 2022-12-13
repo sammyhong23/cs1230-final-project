@@ -41,7 +41,7 @@ private:
     QSlider *texp1Slider;
     QSlider *texp2Slider;
     QSpinBox *texp1Box;
-    QSpinBox *texp2Box;
+    QDoubleSpinBox *texp2Box;
     QSlider *nearSlider;
     QSlider *farSlider;
     QDoubleSpinBox *nearBox;

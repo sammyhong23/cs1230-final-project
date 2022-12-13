@@ -30,7 +30,7 @@ void MainWindow::initialize() {
     camera_label->setText("Camera");
     camera_label->setFont(font);
     QLabel *parallax_label = new QLabel(); // Filters label
-    parallax_label->setText("Parallax Mapping");
+    parallax_label->setText("Bump Mapping");
     parallax_label->setFont(font);
     QLabel *flow_label = new QLabel(); // Extra Credit label
     flow_label->setText("Flow Mapping");
@@ -51,6 +51,8 @@ void MainWindow::initialize() {
     QLabel *texparam2_label = new QLabel(); // Parameter 2 label
     texparam2_label->setText("Parameter 2:");
 
+
+
     // Create checkbox for per-pixel filter
     bezier = new QCheckBox();
     bezier->setText(QStringLiteral("Follow Bezier Curve"));
@@ -58,7 +60,7 @@ void MainWindow::initialize() {
 
     // Create checkbox for kernel-based filter
     parallax = new QCheckBox();
-    parallax->setText(QStringLiteral("Parallax Mapping"));
+    parallax->setText(QStringLiteral("Bump Mapping"));
     parallax->setChecked(false);
 
     // Create file uploader for scene file
@@ -115,15 +117,15 @@ void MainWindow::initialize() {
     texp1Box->setValue(1);
 
     texp2Slider = new QSlider(Qt::Orientation::Horizontal); // Texture Parameter 2 slider
-    texp2Slider->setTickInterval(1);
+    texp2Slider->setTickInterval(0.1);
     texp2Slider->setMinimum(1);
-    texp2Slider->setMaximum(25);
+    texp2Slider->setMaximum(5);
     texp2Slider->setValue(1);
 
-    texp2Box = new QSpinBox();
+    texp2Box = new QDoubleSpinBox();
     texp2Box->setMinimum(1);
-    texp2Box->setMaximum(25);
-    texp2Box->setSingleStep(1);
+    texp2Box->setMaximum(5);
+    texp2Box->setSingleStep(0.1);
     texp2Box->setValue(1);
 
     // Adds the slider and number box to the parameter layouts
@@ -230,11 +232,11 @@ void MainWindow::finish() {
 
 void MainWindow::connectUIElements() {
     connectBezier();
-    connectParallax();
     connectFlow();
+    connectParallax();
+    connectUploadFile();
     connectTexParam1();
     connectTexParam2();
-    connectUploadFile();
     connectParam1();
     connectParam2();
     connectNear();
@@ -260,13 +262,13 @@ void MainWindow::connectUploadFile() {
 void MainWindow::connectTexParam1() {
     connect(texp1Slider, &QSlider::valueChanged, this, &MainWindow::onValChangeTexP1);
     connect(texp1Box, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
-            this, &MainWindow::onValChangeP1);
+            this, &MainWindow::onValChangeTexP1);
 }
 
 void MainWindow::connectTexParam2() {
-    connect(texp1Slider, &QSlider::valueChanged, this, &MainWindow::onValChangeTexP2);
-    connect(texp1Box, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
-            this, &MainWindow::onValChangeP1);
+    connect(texp2Slider, &QSlider::valueChanged, this, &MainWindow::onValChangeTexP2);
+    connect(texp2Box, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
+            this, &MainWindow::onValChangeTexP2);
 }
 
 void MainWindow::connectParam1() {
