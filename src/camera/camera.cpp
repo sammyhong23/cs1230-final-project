@@ -25,6 +25,8 @@ glm::mat4 Camera::getViewMatrix() const {
 }
 
 glm::mat4 Camera::getProjectionMatrix(float near, float far) {
+    near = 0.1f;
+    far = 50.f;
     float Lh = far * tan(cameraData.heightAngle / 2);
     float Lw = Lh * aspectRatio;
     glm::mat4 scale = glm::mat4(1.f / Lw, 0.f, 0.f, 0.f,

@@ -30,7 +30,7 @@ void MainWindow::initialize() {
     camera_label->setText("Camera");
     camera_label->setFont(font);
     QLabel *parallax_label = new QLabel(); // Filters label
-    parallax_label->setText("Parallax Mapping");
+    parallax_label->setText("Bump Mapping");
     parallax_label->setFont(font);
     QLabel *flow_label = new QLabel(); // Extra Credit label
     flow_label->setText("Flow Mapping");
@@ -50,18 +50,23 @@ void MainWindow::initialize() {
     texparam1_label->setText("Parameter 1:");
     QLabel *texparam2_label = new QLabel(); // Parameter 2 label
     texparam2_label->setText("Parameter 2:");
+    QLabel *worley_label = new QLabel(); // Extra Credit label
+    worley_label->setText("Worley:");
+    worley_label->setFont(font);
+    QLabel *speed_label = new QLabel(); // Parameter 2 label
+    speed_label->setText("Flow Speed:");
 
-
-
-    // Create checkbox for per-pixel filter
     bezier = new QCheckBox();
     bezier->setText(QStringLiteral("Follow Bezier Curve"));
     bezier->setChecked(false);
 
-    // Create checkbox for kernel-based filter
     parallax = new QCheckBox();
-    parallax->setText(QStringLiteral("Parallax Mapping"));
+    parallax->setText(QStringLiteral("Bump Mapping"));
     parallax->setChecked(false);
+
+    worley = new QCheckBox();
+    worley->setText(QStringLiteral("Worley Noise (Perlin Otherwise)"));
+    worley->setChecked(false);
 
     // Create file uploader for scene file
     uploadFile = new QPushButton();
@@ -78,16 +83,19 @@ void MainWindow::initialize() {
     QGroupBox *texp2Layout = new QGroupBox(); // horizonal slider 2 alignment
     QHBoxLayout *texl2 = new QHBoxLayout();
 
+    QGroupBox *speedLayout = new QGroupBox(); // horizonal slider 1 alignment
+    QHBoxLayout *speedl1 = new QHBoxLayout();
+
     // Create slider controls to control parameters
     p1Slider = new QSlider(Qt::Orientation::Horizontal); // Parameter 1 slider
     p1Slider->setTickInterval(1);
     p1Slider->setMinimum(1);
-    p1Slider->setMaximum(25);
+    p1Slider->setMaximum(200);
     p1Slider->setValue(1);
 
     p1Box = new QSpinBox();
     p1Box->setMinimum(1);
-    p1Box->setMaximum(25);
+    p1Box->setMaximum(200);
     p1Box->setSingleStep(1);
     p1Box->setValue(1);
 
@@ -119,14 +127,26 @@ void MainWindow::initialize() {
     texp2Slider = new QSlider(Qt::Orientation::Horizontal); // Texture Parameter 2 slider
     texp2Slider->setTickInterval(1);
     texp2Slider->setMinimum(1);
-    texp2Slider->setMaximum(25);
+    texp2Slider->setMaximum(5);
     texp2Slider->setValue(1);
 
-    texp2Box = new QSpinBox();
-    texp2Box->setMinimum(1);
-    texp2Box->setMaximum(25);
-    texp2Box->setSingleStep(1);
-    texp2Box->setValue(1);
+    texp2Box = new QDoubleSpinBox();
+    texp2Box->setMinimum(1.00);
+    texp2Box->setMaximum(5.00);
+    texp2Box->setSingleStep(0.1);
+    texp2Box->setValue(0.1);
+
+    speedSlider = new QSlider(Qt::Orientation::Horizontal);
+    speedSlider->setTickInterval(1);
+    speedSlider->setMinimum(1);
+    speedSlider->setMaximum(10);
+    speedSlider->setValue(1);
+
+    speedBox = new QSpinBox();
+    speedBox->setMinimum(1);
+    speedBox->setMaximum(10);
+    speedBox->setSingleStep(1);
+    speedBox->setValue(1);
 
     // Adds the slider and number box to the parameter layouts
     l1->addWidget(p1Slider);
@@ -145,6 +165,11 @@ void MainWindow::initialize() {
     texl2->addWidget(texp2Slider);
     texl2->addWidget(texp2Box);
     texp2Layout->setLayout(texl2);
+
+    // Adds the slider and number box to the parameter layouts
+    speedl1->addWidget(speedSlider);
+    speedl1->addWidget(speedBox);
+    speedLayout->setLayout(speedl1);
 
     // Creates the boxes containing the camera sliders and number boxes
     QGroupBox *nearLayout = new QGroupBox(); // horizonal near slider alignment
@@ -169,13 +194,13 @@ void MainWindow::initialize() {
     farSlider->setTickInterval(1);
     farSlider->setMinimum(1000);
     farSlider->setMaximum(10000);
-    farSlider->setValue(10000);
+    farSlider->setValue(5000);
 
     farBox = new QDoubleSpinBox();
     farBox->setMinimum(10.f);
     farBox->setMaximum(100.f);
     farBox->setSingleStep(0.1f);
-    farBox->setValue(100.f);
+    farBox->setValue(50.f);
 
     // Adds the slider and number box to the parameter layouts
     lnear->addWidget(nearSlider);
@@ -194,25 +219,28 @@ void MainWindow::initialize() {
     vLayout->addWidget(tesselation_label);
     vLayout->addWidget(param1_label);
     vLayout->addWidget(p1Layout);
-    vLayout->addWidget(param2_label);
-    vLayout->addWidget(p2Layout);
+//    vLayout->addWidget(param2_label);
+//    vLayout->addWidget(p2Layout);
     vLayout->addWidget(camera_label);
-    vLayout->addWidget(near_label);
-    vLayout->addWidget(nearLayout);
-    vLayout->addWidget(far_label);
-    vLayout->addWidget(farLayout);
+//    vLayout->addWidget(near_label);
+//    vLayout->addWidget(nearLayout);
+//    vLayout->addWidget(far_label);
+//    vLayout->addWidget(farLayout);
     vLayout->addWidget(bezier);
     vLayout->addWidget(parallax_label);
     vLayout->addWidget(parallax);
 
     vLayout->addWidget(flow_label);
     vLayout->addWidget(flow);
+    vLayout->addWidget(speed_label);
+    vLayout->addWidget(speedLayout);
 
     vLayout->addWidget(texgen_label);
     vLayout->addWidget(texparam1_label);
     vLayout->addWidget(texp1Layout);
     vLayout->addWidget(texparam2_label);
     vLayout->addWidget(texp2Layout);
+    vLayout->addWidget(worley);
 
     connectUIElements();
 
@@ -241,6 +269,12 @@ void MainWindow::connectUIElements() {
     connectParam2();
     connectNear();
     connectFar();
+    connectFlowSpeed();
+    connectWorley();
+}
+
+void MainWindow::connectWorley() {
+    connect(worley, &QCheckBox::clicked, this, &MainWindow::onWorley);
 }
 
 void MainWindow::connectBezier() {
@@ -267,7 +301,7 @@ void MainWindow::connectTexParam1() {
 
 void MainWindow::connectTexParam2() {
     connect(texp2Slider, &QSlider::valueChanged, this, &MainWindow::onValChangeTexP2);
-    connect(texp2Box, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+    connect(texp2Box, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
             this, &MainWindow::onValChangeTexP2);
 }
 
@@ -295,6 +329,11 @@ void MainWindow::connectFar() {
             this, &MainWindow::onValChangeFarBox);
 }
 
+void MainWindow::onWorley() {
+    settings.worley = !settings.worley;
+    realtime->settingsChanged();
+}
+
 void MainWindow::onBezier() {
     settings.bezier = !settings.bezier;
     realtime->settingsChanged();
@@ -310,6 +349,11 @@ void MainWindow::onFlow() {
     realtime->settingsChanged();
 }
 
+void MainWindow::connectFlowSpeed() {
+    connect(speedSlider, &QSlider::valueChanged, this, &MainWindow::onValChangeSpeedSlider);
+    connect(speedBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+            this, &MainWindow::onValChangeSpeedSlider);
+}
 
 void MainWindow::onUploadFile() {
     // Get abs path of scene file
@@ -359,6 +403,7 @@ void MainWindow::onValChangeNearSlider(int newValue) {
     //nearSlider->setValue(newValue);
     nearBox->setValue(newValue/100.f);
     settings.nearPlane = nearBox->value();
+    settings.nearPlane = 0.1f;
     realtime->settingsChanged();
 }
 
@@ -380,5 +425,12 @@ void MainWindow::onValChangeFarBox(double newValue) {
     farSlider->setValue(int(newValue*100.f));
     //farBox->setValue(newValue);
     settings.farPlane = farBox->value();
+    realtime->settingsChanged();
+}
+
+void MainWindow::onValChangeSpeedSlider(int newValue) {
+    speedSlider->setValue(newValue);
+    speedBox->setValue(newValue);
+    settings.flowspeed = speedSlider->value();
     realtime->settingsChanged();
 }

@@ -23,6 +23,11 @@ public:
         data.push_back(v.y);
         data.push_back(v.z);
     }
+
+    void insertVec2(std::vector<GLfloat> &data, glm::vec2 v) {
+        data.push_back(v[0]);
+        data.push_back(v[1]);
+    }
 };
 
 #endif // SHAPE_H

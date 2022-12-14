@@ -47,6 +47,8 @@ private:
     // Tick Related Variables
     int m_timer;                                        // Stores timer which attempts to run ~60 times per second
     QElapsedTimer m_elapsedTimer;                       // Stores timer which keeps track of actual time between frames
+    QElapsedTimer flowtimer;
+    float t;
 
     // Input Related Variables
     bool m_mouseDown = false;                           // Stores state of left mouse button
@@ -94,4 +96,28 @@ private:
     void move(float deltat, float units);
     void rotateview(float deltaX, float deltaY, float sensitivity);
     glm::mat3 rotation_mat3(glm::vec3 axis, float angle);
+
+    GLuint heightmap;
+    GLuint texturemap;
+    GLuint flowmap;
+
+    void makeFBO(GLuint* fbo, GLuint* fbo_texture, GLuint* fbo_renderbuffer);
+    void setupFullScreenQuad();
+    void paintFBO(const GLuint& fbo, const GLuint& shaderid);
+
+    GLuint fullscreen_vbo;
+    GLuint fullscreen_vao;
+
+    GLuint texgenshader;
+    GLuint fbo;
+    GLuint fbotex;
+    GLuint fborenderbuff;
+
+    GLuint DEFAULT_FBO = 2;
+
+    int curveLength = 0;
+    void move2(int i, std::tuple<std::vector<float>, std::vector<float>, std::vector<float>> bCurve3D);
+    std::tuple<std::vector<float>, std::vector<float>, std::vector<float>> computeBesierCurve3D(std::vector<float> xX,
+                                                                                                std::vector<float> yY,
+                                                                                                std::vector<float> zZ);
 };

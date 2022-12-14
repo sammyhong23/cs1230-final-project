@@ -1,6 +1,6 @@
 #include "parallax.h"
 
-ParallaxMap::ParallaxMap()
-{
+ParallaxMap::ParallaxMap() {
 
 }
+

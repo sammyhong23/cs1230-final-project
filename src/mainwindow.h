@@ -26,7 +26,9 @@ private:
     void connectFar();
     void connectBezier();
     void connectFlow();
+    void connectFlowSpeed();
     void connectParallax();
+    void connectWorley();
     void connectUploadFile();
 
     Realtime *realtime;
@@ -41,11 +43,15 @@ private:
     QSlider *texp1Slider;
     QSlider *texp2Slider;
     QSpinBox *texp1Box;
-    QSpinBox *texp2Box;
+    QDoubleSpinBox *texp2Box;
     QSlider *nearSlider;
     QSlider *farSlider;
     QDoubleSpinBox *nearBox;
     QDoubleSpinBox *farBox;
+    QSlider *speedSlider;
+    QSpinBox *speedBox;
+
+    QCheckBox *worley;
 
 private slots:
     void onBezier();
@@ -60,4 +66,6 @@ private slots:
     void onValChangeFarSlider(int newValue);
     void onValChangeNearBox(double newValue);
     void onValChangeFarBox(double newValue);
+    void onValChangeSpeedSlider(int newValue);
+    void onWorley();
 };

@@ -15,7 +15,11 @@ private:
     void makeTile(glm::vec3 topLeft,
                   glm::vec3 topRight,
                   glm::vec3 bottomLeft,
-                  glm::vec3 bottomRight);
+                  glm::vec3 bottomRight,
+                  glm::vec2 topLeftUV,
+                  glm::vec2 topRightUV,
+                  glm::vec2 bottomLeftUV,
+                  glm::vec2 bottomRightUV);
     void makeWedge(float currTheta, float nextTheta);
     void makeSphere();
 
