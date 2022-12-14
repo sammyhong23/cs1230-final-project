@@ -110,7 +110,7 @@ void Realtime::initializeGL() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    img = QImage(QString("/Users/justinrhee/Desktop/fm2.png"))
+    img = QImage(QString("/Users/justinrhee/Desktop/t1.jpeg"))
             .convertToFormat(QImage::Format_RGBA8888).mirrored();
     glGenTextures(1, &flowmap);
     glActiveTexture(GL_TEXTURE2);
@@ -299,13 +299,13 @@ void Realtime::timerEvent(QTimerEvent *event) {
     // Use deltaTime and m_keyMap here to move around
 
     if (settings.bezier) {
-        std::vector<float> xX1{12.0f, 15.0f, 23.f, 26.0f};
-        std::vector<float> yY1{6.0f, 6.0f, 6.0f, 6.0f};
-        std::vector<float> zZ1{6.0f, -2.0f, -2.0f, 6.0f};
+        std::vector<float> xX1{8, 7, 4, 3};
+        std::vector<float> yY1{4, 2, 4, 6};
+        std::vector<float> zZ1{4, 7, 10, 7};
 
-        std::vector<float> xX2{26.f, 29.0f, 37.0f, 40.0f};
-        std::vector<float> yY2{6.0f, 6.0f, 6.0f, 6.0f};
-        std::vector<float> zZ2{6.f, 8.0f, 9.0f, 6.f};
+        std::vector<float> xX2{3, -1, 7, 8};
+        std::vector<float> yY2{6, 8, 8, 4};
+        std::vector<float> zZ2{7, 5, -7, 4};
 
         std::tuple<std::vector<float>, std::vector<float>, std::vector<float>> bCurve3D1 = computeBesierCurve3D(xX1, yY1, zZ1);
         std::tuple<std::vector<float>, std::vector<float>, std::vector<float>> bCurve3D2 = computeBesierCurve3D(xX2, yY2, zZ2);
@@ -483,7 +483,7 @@ std::tuple<std::vector<float>, std::vector<float>, std::vector<float>> Realtime:
     float bCurveYt;
     float bCurveZt;
 
-    for (float t = 0.005f; t <= 1.f; t += 0.01f)
+    for (float t = 0.005f; t <= 1.f; t += 0.0025f)
     {
 
         bCurveXt = std::pow((1 - t), 3) * xX[0] + 3 * std::pow((1 - t), 2) * t * xX[1] + 3 * std::pow((1 - t), 1) * std::pow(t, 2) * xX[2] + std::pow(t, 3) * xX[3];

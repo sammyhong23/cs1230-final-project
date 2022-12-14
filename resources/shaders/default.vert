@@ -179,7 +179,7 @@ vec4 flowmap(sampler2D texmap, vec2 uvcoord) {
     float time2 = fract(time1 + 0.5f);
     float flowMix = abs((time1 - 0.5f) * 2.0f);
 
-    vec2 flow = texture(flowMap, uvcoord).rg;
+    vec2 flow = 2 * (texture(flowMap, uvcoord).rg + 0.05 - 0.5);
     //flow = vec2(0,1);
     flow *= 5.f;
 
