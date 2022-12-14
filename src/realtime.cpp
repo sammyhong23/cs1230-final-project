@@ -88,7 +88,7 @@ void Realtime::initializeGL() {
 
     initializeVBOSVAOS();
 
-    QImage img = QImage(QString("/Users/justinrhee/Desktop/images/tiled_water2.png"))
+    QImage img = QImage(QString("./resources/images/tiled_water2.jpg"))
             .convertToFormat(QImage::Format_RGBA8888).mirrored();
     glGenTextures(1, &texturemap);
     glActiveTexture(GL_TEXTURE0);
@@ -100,7 +100,7 @@ void Realtime::initializeGL() {
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    img = QImage(QString("/Users/justinrhee/Desktop/watercolor.jpeg"))
+    img = QImage(QString("./resources/images/18fig02.jpg"))
             .convertToFormat(QImage::Format_RGBA8888).mirrored();
     glGenTextures(1, &heightmap);
     glActiveTexture(GL_TEXTURE1);
@@ -110,7 +110,7 @@ void Realtime::initializeGL() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    img = QImage(QString("/Users/justinrhee/Desktop/t1.jpeg"))
+    img = QImage(QString("./resources/images/t1.jpeg"))
             .convertToFormat(QImage::Format_RGBA8888).mirrored();
     glGenTextures(1, &flowmap);
     glActiveTexture(GL_TEXTURE2);
@@ -179,8 +179,6 @@ void Realtime::paintGL() {
         glDrawArrays(GL_TRIANGLES, 0, shapeData[type].size() / 11);
         glBindVertexArray(0);
     }
-
-
 
     glBindTexture(GL_TEXTURE_2D, 0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
