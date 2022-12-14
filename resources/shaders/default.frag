@@ -126,12 +126,16 @@ vec4 flowmap(sampler2D texmap, vec2 uvcoord) {
     float time2 = fract(time1 + 0.5f);
     float flowMix = abs((time1 - 0.5f) * 2.0f);
 
-    vec2 flow = texture(flowMap, uvcoord).rg;
+    //vec2 flow = texture(flowMap, uvcoord).rg;
+    vec2 flow = vec2(0.f, 0.5);
     flow *= 5.f;
 
     vec4 texture1 = texture(texmap, uvcoord + (flow * time1 * 0.1));
     vec4 texture2 = texture(texmap, uvcoord + (flow * time2 * 0.1));
-    return mix(texture1, texture2, flowMix);
+
+    float scale = 1.f;
+
+    return mix(texture1, texture2, flowMix) * scale;
 }
 
 

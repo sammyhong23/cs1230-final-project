@@ -32,6 +32,7 @@ uniform float time;
 
 vec3 applyHeightmap();
 float texturegen(vec2 coord);
+float noise(vec2 st);
 
 void main() {
     uv = uv_in;
@@ -179,10 +180,21 @@ vec4 flowmap(sampler2D texmap, vec2 uvcoord) {
     float time2 = fract(time1 + 0.5f);
     float flowMix = abs((time1 - 0.5f) * 2.0f);
 
-    vec2 flow = texture(flowMap, uvcoord).rg;
+    //vec2 flow = texture(flowMap, uvcoord).rg;
+    vec2 flow = vec2(0.f, 1.f);
     flow *= 5.f;
 
     vec4 texture1 = texture(texmap, uvcoord + (flow * time1 * 0.1));
     vec4 texture2 = texture(texmap, uvcoord + (flow * time2 * 0.1));
-    return mix(texture1, texture2, flowMix);
+
+    vec2 scalePos = uvcoord * 18.f;
+    scalePos.x /= 2.f;
+
+    vec2 scaleFlow = vec2(10.f, 10.f);
+
+
+    float scale1 = noise(scalePos + (scaleFlow * time1 * 0.2)) * 1.3 + 1.0;
+    float scale2 = noise(scalePos + (scaleFlow * time2 * 0.2)) * 1.3 + 1.0;
+
+    return mix(texture1, texture2, flowMix) * mix(scale1, scale2, flowMix);
 }

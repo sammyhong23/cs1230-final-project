@@ -80,7 +80,7 @@ void main() {
         float z4 = noise(pos * 4) / 4;
         float z8 = noise(pos * 8) / 8;
 
-        color = vec3((z1 + z2 + z4 + z8) * 0.5 + 0.5);
+        color = vec3((z1 + z2 + z4 + z8) * 0.8 + 0.5);
 
         fragColor = vec4(color, 1.f);
     }
